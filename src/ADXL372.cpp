@@ -13,11 +13,8 @@
 #define DEVID_PRODUCT 0xFA //372 in octal :) 
 #define STATUS_REGISTER 0x04 //Page 33 in datasheet 0x04
 
-
 //Constants
 #define SPI_SPEED 10000000 //ADXL372 supports up to 10MHz in SCLK frequency
-
-#define ACCEL_CS_PIN 10 //Choose any digital pin
 
 
 ADXL372class::ADXL372class()
@@ -28,12 +25,13 @@ ADXL372class::~ADXL372class()
 {
 }
 
-int ADXL372class::begin()
+int ADXL372class::begin(int csPinInput)
 {
+    csPin = csPinInput;
     SPI.begin();
     SPI.beginTransaction(SPISettings(SPI_SPEED, MSBFIRST, SPI_MODE0));
-    pinMode(ACCEL_CS_PIN, OUTPUT); 
-    digitalWrite(ACCEL_CS_PIN, HIGH); //SPI MODE is 0 so the CS pin goes from high to low when recieving data
+    pinMode(csPin, OUTPUT); 
+    digitalWrite(csPin, HIGH); //SPI MODE is 0 so the CS pin goes from high to low when recieving data
     //Set some adresses here
     return 1;
 }
@@ -58,7 +56,7 @@ void ADXL372class::readAcceleration(float& x, float& y, float& z)
     z = ((float)data[2] * 200.0)/32768.0;
 }
 
-int ADXL372class::accelerationAvailable(uint8_t csPin) 
+int ADXL372class::accelerationAvailable() 
 {
     //check if there is any data, otherwise return 0
     digitalWrite(csPin, LOW);
@@ -70,7 +68,7 @@ int ADXL372class::accelerationAvailable(uint8_t csPin)
 
 }
 
-void ADXL372class::SPIwriteByte(uint8_t csPin, uint8_t subAddress, uint8_t data)
+void ADXL372class::SPIwriteByte(uint8_t subAddress, uint8_t data)
 {
     digitalWrite(csPin, LOW); //Start of SPI transfer
 	
@@ -82,7 +80,7 @@ void ADXL372class::SPIwriteByte(uint8_t csPin, uint8_t subAddress, uint8_t data)
 	digitalWrite(csPin, HIGH); //End of SPI transfer
 }
 
-byte ADXL372class::SPIreadByte(uint8_t csPin, uint8_t subAddress)
+byte ADXL372class::SPIreadByte(uint8_t subAddress)
 {
     byte value = 0;
     digitalWrite(csPin, LOW); //Start of SPI transfer
@@ -94,7 +92,7 @@ byte ADXL372class::SPIreadByte(uint8_t csPin, uint8_t subAddress)
     return value;
 }
 
-void ADXL372class::readAccelerometerRegister(uint8_t csPin, uint16_t* data, size_t length)
+void ADXL372class::readAccelerometerRegister(uint16_t* data, size_t length)
 {
 
     uint8_t transferData[6];

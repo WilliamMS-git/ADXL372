@@ -1,0 +1,9 @@
+# Syntax Coloring Map For ADXL372
+
+# Methods and Functions (KEYWORD2)
+ADXL372class KEYWORD2
+begin KEYWORD2
+end KEYWORD2
+readAcceleration KEYWORD2
+accelerationAvailable KEYWORD2
+SPIreadByte KEYWORD2
