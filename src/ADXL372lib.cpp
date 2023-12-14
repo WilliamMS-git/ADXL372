@@ -1,4 +1,4 @@
-#include "ADXL372lib.h"
+#include "ADXL372.h"
 
 //Data registers. Each axis data has a 12 bit value. Data is left justified, so MSBFIRST.
 //register_H contains the eight most significant bits (MSBs), and register_L contains the four least significant bits (LSBs) of the 12-bit value

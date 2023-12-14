@@ -1,5 +1,5 @@
-#include <Arduino.h>
-#include <SPI.h>
+#include "Arduino.h"
+#include "SPI.h"
 
 class ADXL372class
 {
