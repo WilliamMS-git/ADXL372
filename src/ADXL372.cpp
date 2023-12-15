@@ -48,7 +48,7 @@ void ADXL372class::readAcceleration(float& x, float& y, float& z)
     uint16_t data[3];
     
     //Read accelerometer value and insert data into array
-    ADXL372class::readAccelerometerRegister(ACCEL_CS_PIN, data, sizeof(data));
+    ADXL372class::readAccelerometerRegister(data, sizeof(data));
     
     //Converting calculations to read in G's
     x = ((float)data[0] * 200.0)/32768.0; 
