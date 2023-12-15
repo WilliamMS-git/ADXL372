@@ -7,11 +7,12 @@ float z = 0;
 
 
 void setup() {
-  acc.begin(10); //initialized with pin 10 as cs pin
+  acc.begin(10); //Pin 10 as CS pin of the accelerometer. Use the corresponding pin on your own board
 }
 
 void loop() {
   acc.readAcceleration(x, y, z);
+  Serial.println("Acceleration:")
   Serial.print("X: ");
   Serial.print(x);
   Serial.print(" Y: ");
