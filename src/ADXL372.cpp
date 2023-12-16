@@ -17,21 +17,21 @@
 #define SPI_SPEED 10000000 //ADXL372 supports up to 10MHz in SCLK frequency
 
 
-ADXL372class::ADXL372class()
+ADXL372class::ADXL372class(int csPinInput)
 {
+    m_csPin = csPinInput;
 }
 
 ADXL372class::~ADXL372class()
 {
 }
 
-int ADXL372class::begin(int csPinInput)
+int ADXL372class::begin()
 {
-    csPin = csPinInput;
     SPI.begin();
     SPI.beginTransaction(SPISettings(SPI_SPEED, MSBFIRST, SPI_MODE0));
-    pinMode(csPin, OUTPUT); 
-    digitalWrite(csPin, HIGH); //SPI MODE is 0 so the CS pin goes from high to low when recieving data
+    pinMode(m_csPin, OUTPUT); 
+    digitalWrite(m_csPin, HIGH); //SPI MODE is 0 so the CS pin goes from high to low when recieving data
     //Set some adresses here
     return 1;
 }
@@ -51,61 +51,60 @@ void ADXL372class::readAcceleration(float& x, float& y, float& z)
     ADXL372class::readAccelerometerRegister(data, sizeof(data));
     
     //Converting calculations to read in G's
-    x = ((float)data[0] * 200.0)/32768.0; 
-    y = ((float)data[1] * 200.0)/32768.0;
-    z = ((float)data[2] * 200.0)/32768.0;
+    x = ((float)data[0] * 200.0) / 32768.0; 
+    y = ((float)data[1] * 200.0) / 32768.0;
+    z = ((float)data[2] * 200.0) / 32768.0;
 }
 
 int ADXL372class::accelerationAvailable() 
 {
     //check if there is any data, otherwise return 0
-    digitalWrite(csPin, LOW);
+    digitalWrite(m_csPin, LOW);
 
     uint8_t status = SPI.transfer(STATUS_REGISTER);
 
-	digitalWrite(csPin, HIGH);
-	return (status & (1<<0)); //If the accelerometer has data ready, the first bit the the status register will be 1.
+	digitalWrite(m_csPin, HIGH);
+	return (status & (1 << 0)); //If the accelerometer has data ready, the first bit the the status register will be 1.
 
 }
 
 void ADXL372class::SPIwriteByte(uint8_t subAddress, uint8_t data)
 {
-    digitalWrite(csPin, LOW); //Start of SPI transfer
+    digitalWrite(m_csPin, LOW); //Start of SPI transfer
 	
 	// If write, bit 0 (MSB) should be 0
 	// If single write, bit 1 should be 0
 	SPI.transfer(subAddress /*& 0x3F*/); // Send Address
 	SPI.transfer(data); // Send data
 	
-	digitalWrite(csPin, HIGH); //End of SPI transfer
+	digitalWrite(m_csPin, HIGH); //End of SPI transfer
 }
 
 byte ADXL372class::SPIreadByte(uint8_t subAddress)
 {
     byte value = 0;
-    digitalWrite(csPin, LOW); //Start of SPI transfer
+    digitalWrite(m_csPin, LOW); //Start of SPI transfer
 	
 	SPI.transfer(/*0x80 |*/ subAddress);			// MSB == 1 is for reading. LSB is not used in address. Datasheet section 8.1.2.3.
 	value = SPI.transfer(0);					// Read the value back. Send 0 to stop reading.
 	
-	digitalWrite(csPin, HIGH); //End of SPI transfer
+	digitalWrite(m_csPin, HIGH); //End of SPI transfer
     return value;
 }
 
 void ADXL372class::readAccelerometerRegister(uint16_t* data, size_t length)
 {
-
     uint8_t transferData[6];
-    //Gathering data from accelerometer. This might be wrong if it is not multibyte transfer
-    digitalWrite(csPin, LOW); //Start of SPI transfer
     
+    //Gathering data from accelerometer. This might be wrong if it is not multibyte transfer
+    digitalWrite(m_csPin, LOW); //Start of SPI transfer
     for(uint8_t i = 0; i < sizeof(transferData); i++)
     {
         //This might be incorrect, place the first transfer outside the loop, without the index.
-        SPI.transfer(XDATA_H+i); //First the address is called and then its recieved.
+        SPI.transfer(XDATA_H + i); //First the address is called and then its recieved.
         transferData[i] = SPI.transfer(0x00);
     }
-    digitalWrite(csPin, HIGH); //End of SPI transfer
+    digitalWrite(m_csPin, HIGH); //End of SPI transfer
 
     //Formatting the data
     for(uint8_t i = 0; i < length; i++)
@@ -116,7 +115,7 @@ void ADXL372class::readAccelerometerRegister(uint16_t* data, size_t length)
         //Bit 3:0 in the LSB axis are reserved, so they are bitshifted out of existence, and the remaining 4 bits are added
         formattedData = formattedData << 4;
         
-        formattedData += (transferData[1+i] >> 4);
+        formattedData += (transferData[1 + i] >> 4);
 
         data[i] = formattedData;
     }
