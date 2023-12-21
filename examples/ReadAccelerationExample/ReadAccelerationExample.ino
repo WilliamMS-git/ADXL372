@@ -10,6 +10,7 @@ float z = 0;
 void setup() {
   Serial.begin(9600);
   acc.begin(); 
+  acc.printDevice();
 }
 
 void loop() {
@@ -23,5 +24,5 @@ void loop() {
   Serial.print(" Z: ");
   Serial.println(z);
 
-  delay(500);
+  delay(100); //Change this for faster/slower measurements
 }

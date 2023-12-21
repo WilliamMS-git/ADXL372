@@ -7,5 +7,4 @@ ADXL372class    KEYWORD1
 begin   KEYWORD2
 end KEYWORD2
 readAcceleration    KEYWORD2
-accelerationAvailable   KEYWORD2
-SPIreadByte KEYWORD2
+printdevice KEYWORD2
