@@ -17,6 +17,11 @@
 #define SPI_SPEED 10000000 //ADXL372 supports up to 10MHz in SCLK frequency
 #define SCALE_FACTOR 100 // mg/LSB
 
+//Pins
+#define MOSI_PIN 11
+#define MISO_PIN 12
+#define SCLK_PIN 13
+
 
 ADXL372class::ADXL372class(int csPinInput)
 {
@@ -31,6 +36,9 @@ void ADXL372class::begin()
 {
     SPI.begin();
     SPI.beginTransaction(SPISettings(SPI_SPEED, MSBFIRST, SPI_MODE0));
+    pinMode(MOSI_PIN, OUTPUT); 
+    pinMode(MISO_PIN, INPUT); 
+    pinMode(SCLK_PIN, OUTPUT); 
     pinMode(m_csPin, OUTPUT); 
     digitalWrite(m_csPin, HIGH); //SPI MODE is 0 so the CS pin goes from high to low when recieving data
 
@@ -51,6 +59,7 @@ void ADXL372class::printDevice(){
     byte devidMst = readRegister(0x01);
     byte partId = readRegister(0x02);
     byte revId = readRegister(0x03);
+    byte status = readRegister(0x04);
 
     Serial.print("DEVID_AD: 0x");
     Serial.println(devidAd, HEX);
@@ -63,11 +72,15 @@ void ADXL372class::printDevice(){
 
     Serial.print("REVID: 0x");
     Serial.println(revId, HEX);
+    
+    Serial.print("STATUS: 0x");
+    Serial.println(status, HEX);
 }
 
 uint8_t ADXL372class::readRegister(byte regAddress){
     digitalWrite(m_csPin, LOW);
-    SPI.transfer(regAddress | 0x80);
+    regAddress = regAddress << 1 | 1;
+    SPI.transfer(regAddress);
     uint8_t value = SPI.transfer(0x00);
     digitalWrite(m_csPin, HIGH);
     return value;
