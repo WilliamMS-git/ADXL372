@@ -14,12 +14,14 @@ void setup() {
 
 void loop() {
   acc.readAcceleration(x, y, z);
-    Serial.println("Acceleration:");
-    Serial.print("X: ");
-    Serial.print(x);
-    Serial.print(" Y: ");
-    Serial.print(y);
-    Serial.print(" Z: ");
-    Serial.println(z);
+
+  Serial.println("Acceleration:");
+  Serial.print("X: ");
+  Serial.print(x);
+  Serial.print(" Y: ");
+  Serial.print(y);
+  Serial.print(" Z: ");
+  Serial.println(z);
+
   delay(500);
 }

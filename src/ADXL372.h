@@ -7,9 +7,10 @@ public:
     ADXL372class(int csPinInput); 
     virtual ~ADXL372class();
 
-    int begin();
+    void begin();
     void end();
     void readAcceleration(float& x, float& y, float& z);
+    void printDevice();
 
 private:
     int m_csPin;
