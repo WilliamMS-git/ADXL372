@@ -13,8 +13,9 @@
 #define DEVID_PRODUCT 0xFA //372 in octal :) 
 #define STATUS_REGISTER 0x04 //Page 33 in datasheet 0x04
 
-//Constants
+//Accelerometer Constants
 #define SPI_SPEED 10000000 //ADXL372 supports up to 10MHz in SCLK frequency
+#define SCALE_FACTOR 10 //LSB/g
 
 
 ADXL372class::ADXL372class(int csPinInput)
@@ -33,6 +34,7 @@ int ADXL372class::begin()
     pinMode(m_csPin, OUTPUT); 
     digitalWrite(m_csPin, HIGH); //SPI MODE is 0 so the CS pin goes from high to low when recieving data
     //Set some adresses here
+    writeRegister(0x3F, 0b00000011); // Set accelerometer to FULL BW Measurement mode
     return 1;
 }
 
@@ -43,81 +45,28 @@ void ADXL372class::end()
     SPI.end();
 }
 
-void ADXL372class::readAcceleration(float& x, float& y, float& z)
-{
-    uint16_t data[3];
-    
-    //Read accelerometer value and insert data into array
-    ADXL372class::readAccelerometerRegister(data, sizeof(data));
-    
-    //Converting calculations to read in G's
-    x = ((float)data[0] * 200.0) / 32768.0; 
-    y = ((float)data[1] * 200.0) / 32768.0;
-    z = ((float)data[2] * 200.0) / 32768.0;
-}
-
-int ADXL372class::accelerationAvailable() 
-{
-    //check if there is any data, otherwise return 0
+uint8_t ADXL372class::readRegister(byte regAddress){
     digitalWrite(m_csPin, LOW);
-
-    uint8_t status = SPI.transfer(STATUS_REGISTER);
-
-	digitalWrite(m_csPin, HIGH);
-	return (status & (1 << 0)); //If the accelerometer has data ready, the first bit the the status register will be 1.
-
-}
-
-void ADXL372class::SPIwriteByte(uint8_t subAddress, uint8_t data)
-{
-    digitalWrite(m_csPin, LOW); //Start of SPI transfer
-	
-	// If write, bit 0 (MSB) should be 0
-	// If single write, bit 1 should be 0
-	SPI.transfer(subAddress /*& 0x3F*/); // Send Address
-	SPI.transfer(data); // Send data
-	
-	digitalWrite(m_csPin, HIGH); //End of SPI transfer
-}
-
-byte ADXL372class::SPIreadByte(uint8_t subAddress)
-{
-    byte value = 0;
-    digitalWrite(m_csPin, LOW); //Start of SPI transfer
-	
-	SPI.transfer(/*0x80 |*/ subAddress);			// MSB == 1 is for reading. LSB is not used in address. Datasheet section 8.1.2.3.
-	value = SPI.transfer(0);					// Read the value back. Send 0 to stop reading.
-	
-	digitalWrite(m_csPin, HIGH); //End of SPI transfer
+    SPI.transfer(regAddress | 0x80);
+    uint8_t value = SPI.transfer(0x00);
+    digitalWrite(m_csPin, HIGH);
     return value;
 }
 
-void ADXL372class::readAccelerometerRegister(uint16_t* data, size_t length)
-{
-    uint8_t transferData[6];
-    
-    //Gathering data from accelerometer. This might be wrong if it is not multibyte transfer
-    digitalWrite(m_csPin, LOW); //Start of SPI transfer
-    for(uint8_t i = 0; i < sizeof(transferData); i++)
-    {
-        //This might be incorrect, place the first transfer outside the loop, without the index.
-        SPI.transfer(XDATA_H + i); //First the address is called and then its recieved.
-        transferData[i] = SPI.transfer(0x00);
-    }
-    digitalWrite(m_csPin, HIGH); //End of SPI transfer
+void ADXL372class::writeRegister(byte regAddress, uint8_t value) {
+    digitalWrite(m_csPin, LOW);
+    SPI.transfer(regAddress);
+    SPI.transfer(value);
+    digitalWrite(m_csPin, HIGH);
+}
 
-    //Formatting the data
-    for(uint8_t i = 0; i < length; i++)
-    {
-        uint16_t formattedData;
-        formattedData = transferData[i];
+void ADXL372class::readAcceleration(float& x, float& y, float& z) {
+    float rawX = readRegister(XDATA_H) << 8 | readRegister(XDATA_L);
+    float rawY = readRegister(YDATA_H) << 8 | readRegister(YDATA_L);
+    float rawZ = readRegister(ZDATA_H) << 8 | readRegister(ZDATA_L);
 
-        //Bit 3:0 in the LSB axis are reserved, so they are bitshifted out of existence, and the remaining 4 bits are added
-        formattedData = formattedData << 4;
-        
-        formattedData += (transferData[1 + i] >> 4);
-
-        data[i] = formattedData;
-    }
+    x = rawX / SCALE_FACTOR;
+    y = rawY / SCALE_FACTOR;
+    z = rawZ / SCALE_FACTOR;
 
 }
