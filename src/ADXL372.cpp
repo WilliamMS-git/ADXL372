@@ -94,9 +94,18 @@ void ADXL372class::writeRegister(byte regAddress, uint8_t value) {
 }
 
 void ADXL372class::readAcceleration(float& x, float& y, float& z) {
-    float rawX = readRegister(XDATA_H) << 8 | readRegister(XDATA_L);
-    float rawY = readRegister(YDATA_H) << 8 | readRegister(YDATA_L);
-    float rawZ = readRegister(ZDATA_H) << 8 | readRegister(ZDATA_L);
+  byte status;
+  do {
+        status = readRegister(0x04);
+    } while(status == 1);
+
+    short rawX = readRegister(XDATA_H) << 8 | readRegister(XDATA_L);
+    short rawY = readRegister(YDATA_H) << 8 | readRegister(YDATA_L);
+    short rawZ = readRegister(ZDATA_H) << 8 | readRegister(ZDATA_L);
+
+    rawX = rawX >> 4;
+    rawY = rawY >> 4;
+    rawZ = rawZ >> 4;
 
     x = (rawX * 100) / 1000;
     y = (rawY * 100) / 1000;

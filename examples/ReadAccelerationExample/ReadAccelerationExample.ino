@@ -13,7 +13,6 @@ void setup() {
 }
 
 void loop() {
-  acc.printDevice();
   acc.readAcceleration(x, y, z);
 
   Serial.println("Acceleration:");
