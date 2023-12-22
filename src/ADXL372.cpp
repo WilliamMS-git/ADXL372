@@ -21,6 +21,7 @@
 // System registers
 #define TIMING 0x3D // Timing control register
 #define MEASURE 0x3E // Measurement control register
+#define POWER_CTL 0x3F // Power control register
 
 // Accelerometer Constants
 #define SPI_SPEED 10000000 // ADXL372 supports up to 10MHz in SCLK frequency
@@ -43,7 +44,17 @@ void ADXL372class::begin()
     pinMode(m_csPin, OUTPUT); // Setting chip select pin
     digitalWrite(m_csPin, HIGH); // Pin ready
 
-    //Set some adresses here
+}
+
+void ADXL372class::begin(Bandwidth bandwidth, Odr odr)
+{
+    SPI.begin();
+    SPI.beginTransaction(SPISettings(SPI_SPEED, MSBFIRST, SPI_MODE0)); // CPHA = CPOL = 0
+    pinMode(m_csPin, OUTPUT); // Setting chip select pin
+    digitalWrite(m_csPin, HIGH); // Pin ready
+
+    setBandwidth(bandwidth);
+    setOdr(odr);
 
 }
 
@@ -102,8 +113,13 @@ void ADXL372class::readAcceleration(float& x, float& y, float& z) {
 void ADXL372class::setBandwidth(Bandwidth bandwidth){
     writeRegister(MEASURE, bandwidth);
 }
+
 void ADXL372class::setOdr(Odr odr){
     writeRegister(TIMING, odr);
+}
+
+void ADXL372class::setOperatingMode(OperatingMode opMode){
+    writeRegister(POWER_CTL, opMode);
 }
 
 uint8_t ADXL372class::readRegister(byte regAddress){
