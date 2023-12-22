@@ -10,7 +10,7 @@ Documentation: [ADXL372 Datasheet](https://www.analog.com/media/en/technical-doc
 3. Install the latest version
 
 ### How to use:
-
+This library uses SPI as communication with the accelerometer.
 * ```ADXL372class(csPin)``` Create an ADXL372 object with the CS (Chip select) pin
 * ```printDevice()``` Print the device's Analog Devices ID, device ID, MEMS ID, revision ID and Device Status
 * ```readAcceleration(float& x, float& y, float& z)``` Read the 3-axis acceleration in the unit of g
