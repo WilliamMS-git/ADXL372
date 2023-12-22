@@ -1,7 +1,9 @@
 #include "ADXL372.h"
 
-//Data registers. Each axis data has a 12 bit value. Data is left justified, MSBFIRST.
-//Register *_H contains the eight most significant bits (MSBs), and Register *_L contains the four least significant bits (LSBs) of the 12-bit value
+#define DEVID_PRODUCT 0xFA //372 in octal :) 
+
+// Data registers. Each axis data has a 12 bit value. Data is left justified, MSBFIRST.
+// Register *_H contains the eight most significant bits (MSBs), and Register *_L contains the four least significant bits (LSBs) of the 12-bit value
 #define XDATA_H 0x08
 #define XDATA_L 0x09
 #define YDATA_H 0x0A
@@ -9,19 +11,21 @@
 #define ZDATA_H 0x0C
 #define ZDATA_L 0x0D
 
-//ID registers
-#define DEVID_PRODUCT 0xFA //372 in octal :) 
+// ID registers
 #define DEVID_AD 0x00
 #define DEVID_MST 0x01
 #define PARTID 0x02
 #define REVID 0x03
-#define STATUS_REGISTER 0x04 //Page 33 in datasheet 0x04
+#define STATUS 0x04 // Page 33 in datasheet 0x04
 
-//Accelerometer Constants
-#define SPI_SPEED 10000000 //ADXL372 supports up to 10MHz in SCLK frequency
+// System registers
+#define TIMING 0x3D // Timing control register
+#define MEASURE 0x3E // Measurement control register
+
+// Accelerometer Constants
+#define SPI_SPEED 10000000 // ADXL372 supports up to 10MHz in SCLK frequency
 #define SCALE_FACTOR 100 // mg per LSB
 #define MG_TO_G 0.001 // g per mg
-
 
 ADXL372class::ADXL372class(int csPinInput)
 {
@@ -55,7 +59,7 @@ void ADXL372class::printDevice(){
     byte devidMst = readRegister(DEVID_MST);
     byte partId = readRegister(PARTID);
     byte revId = readRegister(REVID);
-    byte status = readRegister(STATUS_REGISTER);
+    byte status = readRegister(STATUS);
 
     Serial.print("DEVID_AD: 0x");
     Serial.println(devidAd, HEX);
@@ -71,22 +75,6 @@ void ADXL372class::printDevice(){
     
     Serial.print("STATUS: 0x");
     Serial.println(status, HEX);
-}
-
-uint8_t ADXL372class::readRegister(byte regAddress){
-    digitalWrite(m_csPin, LOW);
-    regAddress = regAddress << 1 | 1;
-    SPI.transfer(regAddress);
-    uint8_t value = SPI.transfer(0x00); // Transfering dummy byte to recieve data from accelerometer
-    digitalWrite(m_csPin, HIGH);
-    return value;
-}
-
-void ADXL372class::writeRegister(byte regAddress, uint8_t value) {
-    digitalWrite(m_csPin, LOW);
-    SPI.transfer(regAddress);
-    SPI.transfer(value);
-    digitalWrite(m_csPin, HIGH);
 }
 
 void ADXL372class::readAcceleration(float& x, float& y, float& z) {
@@ -109,5 +97,29 @@ void ADXL372class::readAcceleration(float& x, float& y, float& z) {
     x = rawX * SCALE_FACTOR * MG_TO_G;
     y = rawY * SCALE_FACTOR * MG_TO_G;
     z = rawZ * SCALE_FACTOR * MG_TO_G;
-
 }
+
+void ADXL372class::setBandwidth(Bandwidth bandwidth){
+    writeRegister(MEASURE, bandwidth);
+}
+void ADXL372class::setOdr(Odr odr){
+    writeRegister(TIMING, odr);
+}
+
+uint8_t ADXL372class::readRegister(byte regAddress){
+    digitalWrite(m_csPin, LOW);
+    regAddress = regAddress << 1 | 1; // Reading from a register
+    SPI.transfer(regAddress);
+    uint8_t value = SPI.transfer(0x00); // Transfering dummy byte to recieve data from accelerometer
+    digitalWrite(m_csPin, HIGH);
+    return value;
+}
+
+void ADXL372class::writeRegister(byte regAddress, uint8_t value) {
+    digitalWrite(m_csPin, LOW); 
+    regAddress = regAddress << 1; // Writing to a register
+    SPI.transfer(regAddress);
+    SPI.transfer(value);
+    digitalWrite(m_csPin, HIGH);
+}
+
