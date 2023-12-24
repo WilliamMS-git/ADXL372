@@ -88,12 +88,15 @@ void ADXL372class::printDevice(){
     Serial.println(status, HEX);
 }
 
-void ADXL372class::readAcceleration(float& x, float& y, float& z) {
-    // TODO: This should work but doesn't yet
-    // byte status;
-    // do {
-    //     status = readRegister(0x04);
-    // } while((status & 0x01) == 0); // Waiting for status register
+void ADXL372class::readAcceleration(float& x, float& y, float& z, bool statusCheck) {
+    
+    if (statusCheck == true)
+    {
+        byte status;
+        do {
+            status = readRegister(0x04);
+        } while((status & 0x01) == 0); // Waiting for status register
+    }
 
     // The register is left justified. *DATA_H has bits 11:4 of the register. *DATA_L has bits 3:0.
     short rawX = readRegister(XDATA_H) << 8 | readRegister(XDATA_L); 

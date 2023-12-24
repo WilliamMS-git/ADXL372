@@ -10,3 +10,4 @@ readAcceleration    KEYWORD2
 printdevice KEYWORD2
 setBandwidth    KEYWORD2
 setOdr  KEYWORD2
+setOperatingMode    KEYWORD2

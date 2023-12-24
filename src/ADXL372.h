@@ -34,7 +34,7 @@ public:
     void begin(Bandwidth bandwidth, Odr odr);
     void end();
     void printDevice();
-    void readAcceleration(float& x, float& y, float& z);
+    void readAcceleration(float& x, float& y, float& z, bool statusCheck);
     void setBandwidth(Bandwidth bandwidth);
     void setOdr(Odr odr);
     void setOperatingMode(OperatingMode opMode);
