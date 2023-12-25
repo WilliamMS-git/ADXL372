@@ -5,18 +5,19 @@ Available in Arduino Library manager!
 Documentation: [ADXL372 Datasheet](https://www.analog.com/media/en/technical-documentation/data-sheets/adxl372.pdf)
 
 ### How to install from Arduino IDE:
-1. Open the Library Manager (Ctrl + Shift + I)
-2. Search for ADXL372
-3. Install the latest version
+1. Open the Library Manager (Ctrl + Shift + I).
+2. Search for ADXL372.
+3. Install the latest version.
 
 ### How to use:
 This library uses SPI as communication with the accelerometer. I²C is supported, but has limited functionality. See the documentation for further information.
 
 This accelerometer is packed with features, so check out the [simple example here](https://github.com/Fourier-git/ADXL372/blob/main/examples/ReadAccelerationExample/ReadAccelerationExample.ino) for the minimum requirements for continuously reading the 3-axis acceleration.
 
-* ```ADXL372class(csPin)``` Create an ADXL372 object with the CS (Chip select) pin
-* ```printDevice()``` Print the device's Analog Devices ID, device ID, MEMS ID, revision ID and Device Status
-* ```readAcceleration(float& x, float& y, float& z, bool statusCheck)``` Read the 3-axis acceleration in the unit of g. Use ```statusCheck``` to check if the register is ready to read new values
+* ```ADXL372class(csPin)``` Create an ADXL372 object with the CS (Chip select) pin.
+* ```printDevice()``` Print the device's Analog Devices ID, device ID, MEMS ID, revision ID and Device Status.
+* ```setStatusCheck(bool isCheckingStatus)``` Sets if you want to check if the data is ready or not, before reading the acceleration data.
+* ```readAcceleration(float& x, float& y, float& z, bool statusCheck)``` Read the 3-axis acceleration in the unit of g. Use ```statusCheck``` to check if the register is ready to read new values.
 
 * ```setOdr(Odr odr)``` Sets the ODR. Default is 400Hz. 
     
@@ -27,7 +28,7 @@ This accelerometer is packed with features, so check out the [simple example her
     4. ```ODR_3200Hz```
     5. ```ODR_6400Hz```
 
-* ```setWakeUpRate(WakeUpRate wur)``` Sets the wake-up rate. Default is 52ms
+* ```setWakeUpRate(WakeUpRate wur)``` Sets the wake-up rate. Default is 52ms.
     
     Wake-up rate options:
     1. ```WUR_52ms```
