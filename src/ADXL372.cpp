@@ -130,17 +130,66 @@ void ADXL372class::readAcceleration(float& x, float& y, float& z, bool statusChe
     z = rawZ * SCALE_FACTOR * MG_TO_G;
 }
 
-void ADXL372class::setBandwidth(Bandwidth bandwidth){
-    updateRegister(MEASURE, bandwidth, BANDWIDTH_MASK);
-}
-
 void ADXL372class::setOdr(Odr odr){
     byte odrShifted = odr << 5; // odr bits start from bit 5
     updateRegister(TIMING, odrShifted, ODR_MASK);
 }
 
+void ADXL372class::setWakeUpRate(WakeUpRate wur) {
+    byte wurShifted = wur << 2; // wur bits start from bit 2
+    updateRegister(TIMING, wurShifted, WAKEUP_RATE_MASK);
+}
+
+void ADXL372class::enableExternalClock(bool isEnabled){
+    byte valueShifted = isEnabled << 1; // bit 1 in register
+    updateRegister(TIMING, valueShifted, EXT_CLK_MASK);
+}
+
+void ADXL372class::enableExternalTrigger(bool isEnabled){
+    updateRegister(TIMING, isEnabled, EXT_SYNC_MASK);
+}
+
+void ADXL372class::setBandwidth(Bandwidth bandwidth){
+    updateRegister(MEASURE, bandwidth, BANDWIDTH_MASK);
+}
+
+void ADXL372class::enableLowNoiseOperation(bool isEnabled){
+    byte valueShifted = isEnabled << 3; // bit 3 in register
+    updateRegister(MEASURE, valueShifted, LOW_NOISE_MASK);
+}
+
+void ADXL372class::setLinkLoopActivityProcessing(LinkLoop activityProcessing){
+    byte valueShifted = activityProcessing << 2; // bit 2 in register
+    updateRegister(MEASURE, valueShifted, LINKLOOP_MASK);
+}
+
+void ADXL372class::enableAutosleep(bool isEnabled){
+    byte valueShifted = isEnabled << 6; // bit 6 in register
+    updateRegister(MEASURE, valueShifted, AUTOSLEEP_MASK);
+}
+
 void ADXL372class::setOperatingMode(OperatingMode opMode){
     updateRegister(POWER_CTL, opMode, MODE_MASK);
+}
+
+void ADXL372class::disableHighPassFilter(bool isDisabled){
+    byte valueShifted = isDisabled << 2; // bit 2 in register
+    updateRegister(POWER_CTL, valueShifted, HPF_DISABLE_MASK);
+}
+
+void ADXL372class::disableLowPassFilter(bool isDisabled){
+    byte valueShifted = isDisabled << 3; // bit 3 in register
+    updateRegister(POWER_CTL, valueShifted, LPF_DISABLE_MASK);
+}
+
+void ADXL372class::setFilterSettling(FilterSettlingPeriod filterSettling){
+    byte valueShifted = filterSettling << 4; // bit 4 in register
+    updateRegister(POWER_CTL, valueShifted, LPF_DISABLE_MASK);
+}
+
+void ADXL372class::setInstantOnThreshold(InstantOnThreshold threshold){
+    byte valueShifted = threshold << 5; // bit 5 in register
+    updateRegister(POWER_CTL, valueShifted, LPF_DISABLE_MASK);
 }
 
 uint8_t ADXL372class::readRegister(byte regAddress){

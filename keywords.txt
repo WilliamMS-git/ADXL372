@@ -11,6 +11,15 @@ printdevice	KEYWORD2
 setBandwidth	KEYWORD2
 setOdr	KEYWORD2
 setOperatingMode	KEYWORD2
+setWakeUpRate	KEYWORD2
+enableExternalClock	KEYWORD2
+enableLowNoiseOperation	KEYWORD2
+setLinkLoopActivityProcessing	KEYWORD2
+enableAutosleep	KEYWORD2
+disableHighPassFilter	KEYWORD2
+disableLowPassFilter	KEYWORD2
+setFilterSettling	KEYWORD2
+setInstantOnThreshold	KEYWORD2
 
 # Constants (LITERAL1)
 BW_200Hz	LITERAL1
