@@ -6,6 +6,7 @@ ADXL372class	KEYWORD1
 # Methods and Functions (KEYWORD2)
 begin	KEYWORD2
 end KEYWORD2
+setStatusCheck	KEYWORD2
 readAcceleration	KEYWORD2
 printdevice	KEYWORD2
 setBandwidth	KEYWORD2

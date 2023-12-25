@@ -61,7 +61,8 @@ public:
     void begin(Bandwidth bandwidth, Odr odr);
     void end();
     void printDevice();
-    void readAcceleration(float& x, float& y, float& z, bool statusCheck);
+    void setStatusCheck(bool isCheckingStatus);
+    void readAcceleration(float& x, float& y, float& z);
     
     void setOdr(Odr odr);
     void setWakeUpRate(WakeUpRate wur);
@@ -79,9 +80,11 @@ public:
     void setFilterSettling(FilterSettlingPeriod filterSettling);
     void setInstantOnThreshold(InstantOnThreshold threshold);
     
-
 private:
     int m_csPin;
+    int m_odr = 0;
+    int m_bandwidth = 0;
+    bool m_isCheckingStatus = true;
 
     uint8_t readRegister(byte regAddress);
     void writeRegister(byte regAddress, uint8_t value);

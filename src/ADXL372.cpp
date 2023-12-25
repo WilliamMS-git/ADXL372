@@ -70,9 +70,8 @@ void ADXL372class::begin(Bandwidth bandwidth, Odr odr)
     pinMode(m_csPin, OUTPUT); // Setting chip select pin
     digitalWrite(m_csPin, HIGH); // Pin ready
 
-    setBandwidth(bandwidth);
     setOdr(odr);
-
+    setBandwidth(bandwidth);
 }
 
 void ADXL372class::end()
@@ -105,9 +104,14 @@ void ADXL372class::printDevice(){
     Serial.println(status, HEX);
 }
 
-void ADXL372class::readAcceleration(float& x, float& y, float& z, bool statusCheck) {
+void ADXL372class::setStatusCheck(bool isCheckingStatus) {
+    m_isCheckingStatus = isCheckingStatus;
+}
+
+
+void ADXL372class::readAcceleration(float& x, float& y, float& z) {
     
-    if (statusCheck == true)
+    if (m_isCheckingStatus == true)
     {
         byte status;
         do {
@@ -131,7 +135,11 @@ void ADXL372class::readAcceleration(float& x, float& y, float& z, bool statusChe
 }
 
 void ADXL372class::setOdr(Odr odr){
-    byte odrShifted = odr << 5; // odr bits start from bit 5
+    m_odr = (int)odr;
+    if (m_odr < m_bandwidth){
+        Serial.println("WARNING: ODR must be at least double the bandwidth, to not violate the Nyquist criteria. Otherwise signal integrity will not be maintained");
+    }
+    byte odrShifted = m_odr << 5; // odr bits start from bit 5
     updateRegister(TIMING, odrShifted, ODR_MASK);
 }
 
@@ -150,6 +158,10 @@ void ADXL372class::enableExternalTrigger(bool isEnabled){
 }
 
 void ADXL372class::setBandwidth(Bandwidth bandwidth){
+    m_bandwidth = (int)bandwidth;
+    if (m_bandwidth > m_odr){
+        Serial.println("WARNING: Bandwidth must be no greater than half the ODR, to not violate the Nyquist criteria. Otherwise signal integrity will not be maintained");
+    }
     updateRegister(MEASURE, bandwidth, BANDWIDTH_MASK);
 }
 
