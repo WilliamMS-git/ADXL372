@@ -19,9 +19,9 @@ enum Odr {
 
 enum OperatingMode {
     STANDBY = 0b00,
-    WAKE_UP_MODE = 0b01,
-    INSTANT_ON_MODE = 0b10,
-    FULL_BANDWIDTH_MODE = 0b11
+    WAKE_UP = 0b01,
+    INSTANT_ON = 0b10,
+    FULL_BANDWIDTH = 0b11
 };
 
 class ADXL372class
@@ -44,6 +44,7 @@ private:
 
     uint8_t readRegister(byte regAddress);
     void writeRegister(byte regAddress, uint8_t value);
+    void updateRegister(byte regAddress, uint8_t value, byte mask);
 
 
 };

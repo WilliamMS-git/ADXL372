@@ -16,12 +16,29 @@
 #define DEVID_MST 0x01
 #define PARTID 0x02
 #define REVID 0x03
-#define STATUS 0x04 // Page 33 in datasheet 0x04
 
 // System registers
+#define STATUS 0x04 // Status register
 #define TIMING 0x3D // Timing control register
 #define MEASURE 0x3E // Measurement control register
 #define POWER_CTL 0x3F // Power control register
+
+// System bitmasks
+#define EXT_SYNC_MASK 0xFE // Timing
+#define EXT_CLK_MASK 0xFD
+#define WAKEUP_RATE_MASK 0xE3 
+#define ODR_MASK 0x1F
+
+#define BANDWIDTH_MASK 0xF8 // Measure
+#define LOW_NOISE_MASK 0xF7
+#define LINKLOOP_MASK 0xCF
+#define AUTOSLEEP_MASK 0xBF 
+
+#define MODE_MASK 0xFC // Power Control
+#define HPF_DISABLE_MASK 0xFB
+#define LPF_DISABLE_MASK 0xF7
+#define FILTER_SETTLE_MASK 0xEF
+#define INSTANT_ON_THRESH_MASK 0xDF
 
 // Accelerometer Constants
 #define SPI_SPEED 10000000 // ADXL372 supports up to 10MHz in SCLK frequency
@@ -114,15 +131,16 @@ void ADXL372class::readAcceleration(float& x, float& y, float& z, bool statusChe
 }
 
 void ADXL372class::setBandwidth(Bandwidth bandwidth){
-    writeRegister(MEASURE, bandwidth);
+    updateRegister(MEASURE, bandwidth, BANDWIDTH_MASK);
 }
 
 void ADXL372class::setOdr(Odr odr){
-    writeRegister(TIMING, odr);
+    byte odrShifted = odr << 5; // odr bits start from bit 5
+    updateRegister(TIMING, odrShifted, ODR_MASK);
 }
 
 void ADXL372class::setOperatingMode(OperatingMode opMode){
-    writeRegister(POWER_CTL, opMode);
+    updateRegister(POWER_CTL, opMode, MODE_MASK);
 }
 
 uint8_t ADXL372class::readRegister(byte regAddress){
@@ -140,5 +158,13 @@ void ADXL372class::writeRegister(byte regAddress, uint8_t value) {
     SPI.transfer(regAddress);
     SPI.transfer(value);
     digitalWrite(m_csPin, HIGH);
+}
+
+void ADXL372class::updateRegister(byte regAddress, uint8_t value, byte mask) {
+    // Need to use bitmasks to only change the desired bits in the registers
+    byte registerState = readRegister(regAddress);
+    registerState &= mask;
+    value |= registerState & ~mask;
+    writeRegister(regAddress, value);
 }
 

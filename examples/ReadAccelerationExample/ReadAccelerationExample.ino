@@ -10,11 +10,16 @@ float z = 0;
 void setup() {
   Serial.begin(9600);
   acc.begin(); 
+
   acc.printDevice();
+  // Default values
+  acc.setBandwidth(BW_200Hz); 
+  acc.setOdr(ODR_400Hz);
+  acc.setOperatingMode(FULL_BANDWIDTH);
 }
 
 void loop() {
-  acc.readAcceleration(x, y, z);
+  acc.readAcceleration(x, y, z, false);
 
   Serial.println("Acceleration:");
   Serial.print("X: ");
