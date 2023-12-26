@@ -17,7 +17,7 @@ This accelerometer is packed with features, so check out the [simple example her
 * ```ADXL372class(csPin)``` Create an ADXL372 object with the CS (Chip select) pin.
 * ```printDevice()``` Print the device's Analog Devices ID, device ID, MEMS ID, revision ID and Device Status.
 * ```setStatusCheck(bool isCheckingStatus)``` Sets if you want to check if the data is ready or not, before reading the acceleration data.
-* ```readAcceleration(float& x, float& y, float& z, bool statusCheck)``` Read the 3-axis acceleration in the unit of g. Use ```statusCheck``` to check if the register is ready to read new values.
+* ```readAcceleration(float& x, float& y, float& z)``` Read the 3-axis acceleration in g.
 
 * ```setOdr(Odr odr)``` Sets the ODR. Default is 400Hz. 
     
