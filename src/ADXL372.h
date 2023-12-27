@@ -1,6 +1,24 @@
 #include "Arduino.h"
 #include "SPI.h"
 
+enum FifoMode {
+    FIFO_DISABLED = 0b00,
+    STREAM = 0b01,
+    TRIGGERED = 0b10,
+    OLDEST_SAVED = 0b11
+};
+
+enum FifoFormat {
+    XYZ = 0b000,
+    X = 0b001,
+    Y = 0b010,
+    XY = 0b011,
+    Z = 0b100,
+    XZ = 0b101,
+    YZ = 0b110,
+    XYZ_PEAK = 0b111
+};
+
 enum Odr {
     ODR_400Hz = 0b000,
     ODR_800Hz = 0b001,
@@ -62,7 +80,11 @@ public:
     void end();
     void printDevice();
     void setStatusCheck(bool isCheckingStatus);
+
     void readAcceleration(float& x, float& y, float& z);
+
+    void setFifoMode(FifoMode mode);
+    void setFifoFormat(FifoFormat format);
     
     void setOdr(Odr odr);
     void setWakeUpRate(WakeUpRate wur);

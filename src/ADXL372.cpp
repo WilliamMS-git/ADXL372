@@ -19,11 +19,18 @@
 
 // System registers
 #define STATUS 0x04 // Status register
+
+#define FIFO_SAMPLES 0x39 // FIFO samples register
+#define FIFO_CTL 0x3A // FIFO control register
+
 #define TIMING 0x3D // Timing control register
 #define MEASURE 0x3E // Measurement control register
 #define POWER_CTL 0x3F // Power control register
 
 // System bitmasks
+#define FIFO_MODE_MASK 0xF9 // FIFO control
+#define FIFO_FORMAT_MASK 0xC7
+
 #define EXT_SYNC_MASK 0xFE // Timing
 #define EXT_CLK_MASK 0xFD
 #define WAKEUP_RATE_MASK 0xE3 
@@ -132,6 +139,16 @@ void ADXL372class::readAcceleration(float& x, float& y, float& z) {
     x = rawX * SCALE_FACTOR * MG_TO_G;
     y = rawY * SCALE_FACTOR * MG_TO_G;
     z = rawZ * SCALE_FACTOR * MG_TO_G;
+}
+
+void ADXL372class::setFifoMode(FifoMode mode) {
+    byte modeShifted = mode << 1; // starts from bit 1 in register
+    updateRegister(FIFO_CTL, modeShifted, FIFO_MODE_MASK);
+}
+
+void ADXL372class::setFifoFormat(FifoFormat format) {
+    byte formatShifted = format << 3; // starts from bit 3 in register
+    updateRegister(FIFO_CTL, formatShifted, FIFO_FORMAT_MASK);
 }
 
 void ADXL372class::setOdr(Odr odr){
