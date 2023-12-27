@@ -28,7 +28,8 @@
 #define POWER_CTL 0x3F // Power control register
 
 // System bitmasks
-#define FIFO_MODE_MASK 0xF9 // FIFO control
+#define FIFO_SAMPLES_8_MASK 0xFE // FIFO control
+#define FIFO_MODE_MASK 0xF9 
 #define FIFO_FORMAT_MASK 0xC7
 
 #define EXT_SYNC_MASK 0xFE // Timing
@@ -139,6 +140,16 @@ void ADXL372class::readAcceleration(float& x, float& y, float& z) {
     x = rawX * SCALE_FACTOR * MG_TO_G;
     y = rawY * SCALE_FACTOR * MG_TO_G;
     z = rawZ * SCALE_FACTOR * MG_TO_G;
+}
+
+void ADXL372class::setFifoSamples(int sampleSize){
+    if(sampleSize > 512){
+        Serial.println("WARNING: FIFO samples limit is 512");
+        sampleSize = 512;
+    }
+    sampleSize -= 1; 
+    writeRegister(FIFO_SAMPLES, sampleSize & 0xFF); // Sending the 8 least significant bits in the samples 
+    updateRegister(FIFO_CTL, (sampleSize > 0xFF), FIFO_SAMPLES_8_MASK);
 }
 
 void ADXL372class::setFifoMode(FifoMode mode) {

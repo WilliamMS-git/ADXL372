@@ -4,7 +4,7 @@
 enum FifoMode {
     FIFO_DISABLED = 0b00,
     STREAM = 0b01,
-    TRIGGERED = 0b10,
+    TRIGGER = 0b10,
     OLDEST_SAVED = 0b11
 };
 
@@ -83,6 +83,7 @@ public:
 
     void readAcceleration(float& x, float& y, float& z);
 
+    void setFifoSamples(int sampleSize);
     void setFifoMode(FifoMode mode);
     void setFifoFormat(FifoFormat format);
     
