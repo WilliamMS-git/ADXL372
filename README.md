@@ -18,6 +18,9 @@ This accelerometer is packed with features, so check out the [simple example her
 * ```printDevice()``` Print the device's Analog Devices ID, device ID, MEMS ID, revision ID and Device Status.
 * ```setStatusCheck(bool isCheckingStatus)``` Sets if you want to check if the data is ready or not, before reading the acceleration data.
 * ```readAcceleration(float& x, float& y, float& z)``` Read the 3-axis acceleration in g.
+* ```readPeakAcceleration(float& xPeak, float& yPeak, float& zPeak)``` Read the 3-axis peak acceleration in g.
+
+* ```setOffsetTrims(OffsetTrims xOffset, OffsetTrims yOffset, OffsetTrims zOffset)``` Sets the offsets for each of the 3-axis. Use enum OffsetTrims between ```OT_n60``` and ```OT_52_5``` in intervals of 7.5 (```7_5```).
 
 * ```setOdr(Odr odr)``` Sets the ODR. Default is 400Hz. 
     

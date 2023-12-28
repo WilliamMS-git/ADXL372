@@ -38,6 +38,10 @@
 #define FIFO_DATA 0x42 // FIFO data register
 
 // System bitmasks
+#define OFFSET_X 0x20
+#define OFFSET_Y 0x21
+#define OFFSET_Z 0x22
+
 #define FIFO_SAMPLES_8_MASK 0xFE // FIFO control
 #define FIFO_MODE_MASK 0xF9
 #define FIFO_FORMAT_MASK 0xC7
@@ -177,6 +181,13 @@ void ADXL372class::readPeakAcceleration(float &xPeak, float &yPeak, float &zPeak
     xPeak = rawX * SCALE_FACTOR * MG_TO_G;
     yPeak = rawY * SCALE_FACTOR * MG_TO_G;
     zPeak = rawZ * SCALE_FACTOR * MG_TO_G;
+}
+
+void ADXL372class::setOffsetTrims(OffsetTrims xOffset, OffsetTrims yOffset, OffsetTrims zOffset){
+    // No need to mask or bitshift for the offset registers
+    writeRegister(OFFSET_X, xOffset);
+    writeRegister(OFFSET_Y, yOffset);
+    writeRegister(OFFSET_Z, zOffset);
 }
 
 void ADXL372class::readFifoData(uint16_t *fifoData)
