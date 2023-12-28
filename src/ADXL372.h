@@ -91,8 +91,9 @@ public:
     void setStatusCheck(bool isCheckingStatus);
 
     void readAcceleration(float &x, float &y, float &z);
+    void readPeakAcceleration(float &x, float &y, float &z);
 
-    void readFifoData(uint16_t &fifoData);
+    void readFifoData(uint16_t *fifoData);
     void setFifoSamples(int sampleSize);
     void setFifoMode(FifoMode mode);
     void setFifoFormat(FifoFormat format);

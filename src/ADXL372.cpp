@@ -11,6 +11,14 @@
 #define ZDATA_H 0x0C
 #define ZDATA_L 0x0D
 
+// Peak Data registers.
+#define  MAXPEAK_X_H 0x15
+#define  MAXPEAK_X_L 0x16
+#define  MAXPEAK_Y_H 0x17
+#define  MAXPEAK_Y_L 0x18
+#define  MAXPEAK_Z_H 0x19
+#define  MAXPEAK_Z_L 0x1A
+
 // ID registers
 #define DEVID_AD 0x00
 #define DEVID_MST 0x01
@@ -146,11 +154,36 @@ void ADXL372class::readAcceleration(float &x, float &y, float &z)
     z = rawZ * SCALE_FACTOR * MG_TO_G;
 }
 
-void ADXL372class::readFifoData(uint16_t &fifoData)
+void ADXL372class::readPeakAcceleration(float &xPeak, float &yPeak, float &zPeak)
+{
+    if (m_isCheckingStatus == true)
+    {
+        byte status;
+        do
+        {
+            status = readRegister(0x04);
+        } while ((status & 0x01) == 0); 
+    }
+    
+    short rawX = readRegister(MAXPEAK_X_H) << 8 | readRegister(MAXPEAK_X_L);
+    short rawY = readRegister(MAXPEAK_Y_H) << 8 | readRegister(MAXPEAK_Y_L);
+    short rawZ = readRegister(MAXPEAK_Z_H) << 8 | readRegister(MAXPEAK_Z_L);
+
+    rawX = rawX >> 4;
+    rawY = rawY >> 4;
+    rawZ = rawZ >> 4;
+
+    // Converting raw axis data to acceleration in g unit
+    xPeak = rawX * SCALE_FACTOR * MG_TO_G;
+    yPeak = rawY * SCALE_FACTOR * MG_TO_G;
+    zPeak = rawZ * SCALE_FACTOR * MG_TO_G;
+}
+
+void ADXL372class::readFifoData(uint16_t *fifoData)
 {
     digitalWrite(m_csPin, LOW);
-    SPI.transfer(FIFO_DATA << 1 | 1;);
-    for(int i = 0; i < sampleSize; i++) {
+    SPI.transfer(FIFO_DATA << 1 | 1);
+    for(int i = 0; i < m_sampleSize; i++) {
         fifoData[i * 3] = SPI.transfer16(0x00);
         fifoData[i * 3 + 1] = SPI.transfer16(0x00);
         fifoData[i * 3 + 2] = SPI.transfer16(0x00);
