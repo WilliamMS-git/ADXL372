@@ -116,6 +116,8 @@ public:
 
     void setActivityThresholds(uint16_t xThreshold, uint16_t yThreshold, uint16_t zThreshold);
     void setActivityTimer(uint8_t timerPeriod);
+    void setInactivityThresholds(uint16_t xThreshold, uint16_t yThreshold, uint16_t zThreshold);
+    void setInactivityTimer(uint16_t timerPeriod);
 
     void readFifoData(uint16_t *fifoData);
     void setFifoSamples(int sampleSize);

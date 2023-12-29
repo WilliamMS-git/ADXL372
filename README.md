@@ -22,7 +22,9 @@ This accelerometer is packed with features, so check out the [simple example her
 
 * ```setOffsetTrims(OffsetTrims xOffset, OffsetTrims yOffset, OffsetTrims zOffset)``` Sets the offsets for each of the 3-axis. Use enum OffsetTrims between ```OT_n60``` and ```OT_52_5``` in intervals of 7.5 (```7_5```).
 * ```setActivityThresholds(uint16_t xThreshold, uint16_t yThreshold, uint16_t zThreshold)``` Sets the activity thresholds for the 3 axis. Threshold value is a 11-bit value with 100mg per LSB
-* ```setActivityTimer(uint8_t timerPeriod)``` Sets the activity timer period. Timer period is 6.6ms per code at 3200Hz ODR and below, and 3.3ms at 6400Hz ODR.
+* ```setActivityTimer(uint8_t timerPeriod)``` Sets the activity timer period. Timer period is ~6.6ms per code at 3200Hz ODR and below, and ~3.3ms at 6400Hz ODR.
+* ```setInactivityThresholds(uint16_t xThreshold, uint16_t yThreshold, uint16_t zThreshold)``` Sets the inactivity thresholds for the 3 axis. Same as activity threshold.
+* ```setInactivityTimer(uint16_t timerPeriod)``` Sets the activity timer period. Timer period is ~26ms per code at 3200Hz ODR and below, and ~13ms at 6400Hz ODR.
 
 * ```setOdr(Odr odr)``` Sets the ODR. Default is 400Hz. 
     

@@ -41,6 +41,16 @@
 
 #define TIME_ACT 0x29 // Activity time register
 
+#define THRESH_INACT_X_H 0x2A // Inactivity threshold register
+#define THRESH_INACT_X_L 0x2B
+#define THRESH_INACT_Y_H 0x2C
+#define THRESH_INACT_Y_L 0x2D
+#define THRESH_INACT_Z_H 0x2E
+#define THRESH_INACT_Z_L 0x2F
+
+#define TIME_INACT_H 0x30 // Inactivity time register
+#define TIME_INACT_L 0x31
+
 #define FIFO_SAMPLES 0x39 // FIFO samples register
 #define FIFO_CTL 0x3A     // FIFO control register
 
@@ -231,6 +241,28 @@ void ADXL372class::setActivityTimer(uint8_t timerPeriod) {
         Serial.println("WARNING: The activity timer is operational in measurement mode only");
     }
     writeRegister(TIME_ACT, timerPeriod);
+}
+
+void ADXL372class::setInactivityThresholds(uint16_t xThreshold, uint16_t yThreshold, uint16_t zThreshold) {
+    uint8_t xThresh8Msb = formatThresholdValue(xThreshold);
+    writeRegister(THRESH_INACT_X_H, xThresh8Msb);
+    updateRegister(THRESH_INACT_X_L, (xThreshold << 5), THRESH_ACT_L_MASK);
+
+    uint8_t yThresh8Msb = formatThresholdValue(yThreshold);
+    writeRegister(THRESH_INACT_Y_H, yThresh8Msb);
+    updateRegister(THRESH_INACT_Y_L, (yThreshold << 5), THRESH_ACT_L_MASK);
+
+    uint8_t zThresh8Msb = formatThresholdValue(zThreshold);
+    writeRegister(THRESH_INACT_Z_H, zThresh8Msb);
+    updateRegister(THRESH_INACT_Z_L, (zThreshold << 5), THRESH_ACT_L_MASK);
+}
+
+void ADXL372class::setInactivityTimer(uint16_t timerPeriod) {
+    uint8_t timerPeriodH = timerPeriod >> 8;
+    uint8_t timerPeriodL = timerPeriod;
+    
+    writeRegister(TIME_INACT_H, timerPeriodH);
+    writeRegister(TIME_INACT_L, timerPeriodL);
 }
 
 void ADXL372class::readFifoData(uint16_t *fifoData)
