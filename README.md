@@ -22,8 +22,13 @@ This accelerometer is packed with features, so check out the [simple example her
 
 * ```setOffsetTrims(OffsetTrims xOffset, OffsetTrims yOffset, OffsetTrims zOffset)``` Sets the offsets for each of the 3-axis. Use enum OffsetTrims between ```OT_n60``` and ```OT_52_5``` in intervals of 7.5 (```7_5```).
 * ```setActivityThresholds(uint16_t xThreshold, uint16_t yThreshold, uint16_t zThreshold)``` Sets the activity thresholds for the 3 axis. Threshold value is a 11-bit value with 100mg per LSB
+* ```enableActivityDetection(bool isEnabledX, bool isEnabledY, bool isEnabledZ)``` Enable activity detection for each axis. 
+* ```setReferencedActivityProcessing(bool isReferencedX, bool isReferencedY, bool isReferencedZ)``` Referenced activity processing for each axis when true. Absolute processing when false.
 * ```setActivityTimer(uint8_t timerPeriod)``` Sets the activity timer period. Timer period is ~6.6ms per code at 3200Hz ODR and below, and ~3.3ms at 6400Hz ODR.
+
 * ```setInactivityThresholds(uint16_t xThreshold, uint16_t yThreshold, uint16_t zThreshold)``` Sets the inactivity thresholds for the 3 axis. Same as activity threshold.
+* ```enableInactivityDetection(bool isEnabledX, bool isEnabledY, bool isEnabledZ)``` Enable inactivity detection for each axis. 
+* ```setReferencedInactivityProcessing(bool isReferencedX, bool isReferencedY, bool isReferencedZ)``` Referenced inactivity processing for each axis when true. Absolute processing when false.
 * ```setInactivityTimer(uint16_t timerPeriod)``` Sets the activity timer period. Timer period is ~26ms per code at 3200Hz ODR and below, and ~13ms at 6400Hz ODR.
 
 * ```setOdr(Odr odr)``` Sets the ODR. Default is 400Hz. 
@@ -59,12 +64,12 @@ This accelerometer is packed with features, so check out the [simple example her
     5. ```BW_3200Hz```
 
 * ```enableLowNoiseOperation(bool isEnabled)``` Enables Low-noise operation when set to true.
-* ```setLinkLoopActivityProcessing(LinkLoop activityProcessing)``` Sets the activity processing mode.
+* ```setLinkLoopActivityProcessing(LinkLoop activityProcessing)``` Sets the activity processing mode. Activity and inactivity must be enabled for either linked or looped mode.
 
     Link-Loop options:
     1. ```DEFAULT```
     2. ```LINKED```
-    3. ```LOOPED```
+    3. ```LOOPED``` 
 
 * ```enableAutosleep(bool isEnabled)``` Enables Autosleep mode when set to true. If activity processing is set to ```DEFAULT```, this bit will be ignored.
 

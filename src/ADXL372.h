@@ -115,8 +115,13 @@ public:
     void setOffsetTrims(OffsetTrims xOffset, OffsetTrims yOffset, OffsetTrims zOffset);
 
     void setActivityThresholds(uint16_t xThreshold, uint16_t yThreshold, uint16_t zThreshold);
+    void enableActivityDetection(bool isEnabledX, bool isEnabledY, bool isEnabledZ);
+    void setReferencedActivityProcessing(bool isReferencedX, bool isReferencedY, bool isReferencedZ);
     void setActivityTimer(uint8_t timerPeriod);
+    
     void setInactivityThresholds(uint16_t xThreshold, uint16_t yThreshold, uint16_t zThreshold);
+    void enableInactivityDetection(bool isEnabledX, bool isEnabledY, bool isEnabledZ);
+    void setReferencedInactivityProcessing(bool isReferencedX, bool isReferencedY, bool isReferencedZ);
     void setInactivityTimer(uint16_t timerPeriod);
 
     void readFifoData(uint16_t *fifoData);

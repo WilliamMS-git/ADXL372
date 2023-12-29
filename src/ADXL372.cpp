@@ -61,7 +61,13 @@
 #define FIFO_DATA 0x42 // FIFO data register
 
 // System bitmasks
-#define THRESH_ACT_L_MASK 0x1F
+#define THRESH_ACT_L_MASK 0x1F // Activity detection
+#define ACT_EN_MASK 0xFE
+#define ACT_REF_MASK 0xFD
+
+#define THRESH_INACT_L_MASK 0x1F // Inactivity detection
+#define INACT_EN_MASK 0xFE
+#define INACT_REF_MASK 0xFD
 
 #define FIFO_SAMPLES_8_MASK 0xFE // FIFO control
 #define FIFO_MODE_MASK 0xF9
@@ -234,6 +240,18 @@ void ADXL372class::setActivityThresholds(uint16_t xThreshold, uint16_t yThreshol
     updateRegister(THRESH_ACT_Z_L, (zThreshold << 5), THRESH_ACT_L_MASK);
 }
 
+void ADXL372class::enableActivityDetection(bool isEnabledX, bool isEnabledY, bool isEnabledZ) {
+    updateRegister(THRESH_ACT_X_L, isEnabledX, ACT_EN_MASK); // bit 1 in register
+    updateRegister(THRESH_ACT_Y_L, isEnabledY, ACT_EN_MASK);
+    updateRegister(THRESH_ACT_Z_L, isEnabledZ, ACT_EN_MASK);
+}
+
+void ADXL372class::setReferencedActivityProcessing(bool isReferencedX, bool isReferencedY, bool isReferencedZ) {
+    updateRegister(THRESH_ACT_X_L, isReferencedX << 1, ACT_REF_MASK); // bit 1 in register
+    updateRegister(THRESH_ACT_Y_L, isReferencedY << 1, ACT_REF_MASK);
+    updateRegister(THRESH_ACT_Z_L, isReferencedZ << 1, ACT_REF_MASK);
+}
+
 void ADXL372class::setActivityTimer(uint8_t timerPeriod) {
     uint8_t currentOpMode = readRegister(POWER_CTL);
     currentOpMode &= 0b11; // Get only the MODE bits
@@ -246,15 +264,27 @@ void ADXL372class::setActivityTimer(uint8_t timerPeriod) {
 void ADXL372class::setInactivityThresholds(uint16_t xThreshold, uint16_t yThreshold, uint16_t zThreshold) {
     uint8_t xThresh8Msb = formatThresholdValue(xThreshold);
     writeRegister(THRESH_INACT_X_H, xThresh8Msb);
-    updateRegister(THRESH_INACT_X_L, (xThreshold << 5), THRESH_ACT_L_MASK);
+    updateRegister(THRESH_INACT_X_L, (xThreshold << 5), THRESH_INACT_L_MASK);
 
     uint8_t yThresh8Msb = formatThresholdValue(yThreshold);
     writeRegister(THRESH_INACT_Y_H, yThresh8Msb);
-    updateRegister(THRESH_INACT_Y_L, (yThreshold << 5), THRESH_ACT_L_MASK);
+    updateRegister(THRESH_INACT_Y_L, (yThreshold << 5), THRESH_INACT_L_MASK);
 
     uint8_t zThresh8Msb = formatThresholdValue(zThreshold);
     writeRegister(THRESH_INACT_Z_H, zThresh8Msb);
-    updateRegister(THRESH_INACT_Z_L, (zThreshold << 5), THRESH_ACT_L_MASK);
+    updateRegister(THRESH_INACT_Z_L, (zThreshold << 5), THRESH_INACT_L_MASK);
+}
+
+void ADXL372class::enableInactivityDetection(bool isEnabledX, bool isEnabledY, bool isEnabledZ) {
+    updateRegister(THRESH_ACT_X_L, isEnabledX, ACT_EN_MASK); // bit 1 in register
+    updateRegister(THRESH_ACT_Y_L, isEnabledY, ACT_EN_MASK);
+    updateRegister(THRESH_ACT_Z_L, isEnabledZ, ACT_EN_MASK);
+}
+
+void ADXL372class::setReferencedInactivityProcessing(bool isReferencedX, bool isReferencedY, bool isReferencedZ) {
+    updateRegister(THRESH_INACT_X_L, isReferencedX << 1, INACT_REF_MASK); // bit 1 in register
+    updateRegister(THRESH_INACT_Y_L, isReferencedY << 1, INACT_REF_MASK);
+    updateRegister(THRESH_INACT_Z_L, isReferencedZ << 1, INACT_REF_MASK);
 }
 
 void ADXL372class::setInactivityTimer(uint16_t timerPeriod) {

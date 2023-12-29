@@ -11,8 +11,12 @@ readAcceleration	KEYWORD2
 readPeakAcceleration	KEYWORD2
 setOffsetTrims	KEYWORD2
 setActivityThresholds	KEYWORD2
+enableActivityDetection	KEYWORD2
+setReferencedActivityProcessing	KEYWORD2
 setActivityTimer	KEYWORD2
 setInactivityThresholds	KEYWORD2
+enableInactivityDetection	KEYWORD2
+setReferencedInactivityProcessing	KEYWORD2
 setInactivityTimer	KEYWORD2
 printdevice	KEYWORD2
 setBandwidth	KEYWORD2
