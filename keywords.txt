@@ -18,6 +18,9 @@ setInactivityThresholds	KEYWORD2
 enableInactivityDetection	KEYWORD2
 setReferencedInactivityProcessing	KEYWORD2
 setInactivityTimer	KEYWORD2
+setMotionWarningThresholds	KEYWORD2
+enableMotionWarningDetection	KEYWORD2
+setReferencedMotionWarningProcessing	KEYWORD2
 printdevice	KEYWORD2
 setBandwidth	KEYWORD2
 setOdr	KEYWORD2

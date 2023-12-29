@@ -116,13 +116,17 @@ public:
 
     void setActivityThresholds(uint16_t xThreshold, uint16_t yThreshold, uint16_t zThreshold);
     void enableActivityDetection(bool isEnabledX, bool isEnabledY, bool isEnabledZ);
-    void setReferencedActivityProcessing(bool isReferencedX, bool isReferencedY, bool isReferencedZ);
+    void setReferencedActivityProcessing(bool isReferenced);
     void setActivityTimer(uint8_t timerPeriod);
     
     void setInactivityThresholds(uint16_t xThreshold, uint16_t yThreshold, uint16_t zThreshold);
     void enableInactivityDetection(bool isEnabledX, bool isEnabledY, bool isEnabledZ);
-    void setReferencedInactivityProcessing(bool isReferencedX, bool isReferencedY, bool isReferencedZ);
+    void setReferencedInactivityProcessing(bool isReferenced);
     void setInactivityTimer(uint16_t timerPeriod);
+
+    void setMotionWarningThresholds(uint16_t xThreshold, uint16_t yThreshold, uint16_t zThreshold);
+    void enableMotionWarningDetection(bool isEnabledX, bool isEnabledY, bool isEnabledZ);
+    void setReferencedMotionWarningProcessing(bool isReferenced);
 
     void readFifoData(uint16_t *fifoData);
     void setFifoSamples(int sampleSize);

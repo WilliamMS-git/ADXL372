@@ -16,21 +16,29 @@ This accelerometer is packed with features, so check out the [simple example her
 
 * ```ADXL372class(csPin)``` Create an ADXL372 object with the CS (Chip select) pin.
 * ```printDevice()``` Print the device's Analog Devices ID, device ID, MEMS ID, revision ID and Device Status.
+#### Reading Acceleration
 * ```setStatusCheck(bool isCheckingStatus)``` Sets if you want to check if the data is ready or not, before reading the acceleration data.
 * ```readAcceleration(float& x, float& y, float& z)``` Read the 3-axis acceleration in g.
 * ```readPeakAcceleration(float& xPeak, float& yPeak, float& zPeak)``` Read the 3-axis peak acceleration in g.
-
+#### Offset
 * ```setOffsetTrims(OffsetTrims xOffset, OffsetTrims yOffset, OffsetTrims zOffset)``` Sets the offsets for each of the 3-axis. Use enum OffsetTrims between ```OT_n60``` and ```OT_52_5``` in intervals of 7.5 (```7_5```).
+#### Activity
 * ```setActivityThresholds(uint16_t xThreshold, uint16_t yThreshold, uint16_t zThreshold)``` Sets the activity thresholds for the 3 axis. Threshold value is a 11-bit value with 100mg per LSB
 * ```enableActivityDetection(bool isEnabledX, bool isEnabledY, bool isEnabledZ)``` Enable activity detection for each axis. 
-* ```setReferencedActivityProcessing(bool isReferencedX, bool isReferencedY, bool isReferencedZ)``` Referenced activity processing for each axis when true. Absolute processing when false.
+* ```setReferencedActivityProcessing(bool isReferenced)``` Referenced activity processing for each axis when true. Absolute processing when false.
 * ```setActivityTimer(uint8_t timerPeriod)``` Sets the activity timer period. Timer period is ~6.6ms per code at 3200Hz ODR and below, and ~3.3ms at 6400Hz ODR.
-
+#### Inactivity
 * ```setInactivityThresholds(uint16_t xThreshold, uint16_t yThreshold, uint16_t zThreshold)``` Sets the inactivity thresholds for the 3 axis. Same as activity threshold.
 * ```enableInactivityDetection(bool isEnabledX, bool isEnabledY, bool isEnabledZ)``` Enable inactivity detection for each axis. 
-* ```setReferencedInactivityProcessing(bool isReferencedX, bool isReferencedY, bool isReferencedZ)``` Referenced inactivity processing for each axis when true. Absolute processing when false.
+* ```setReferencedInactivityProcessing(bool isReferenced)``` Referenced inactivity processing for each axis when true. Absolute processing when false.
 * ```setInactivityTimer(uint16_t timerPeriod)``` Sets the activity timer period. Timer period is ~26ms per code at 3200Hz ODR and below, and ~13ms at 6400Hz ODR.
 
+#### Motion Warning
+* ```setMotionWarningThresholds(uint16_t xThreshold, uint16_t yThreshold, uint16_t zThreshold)``` Sets the Motion Warning thresholds for the 3 axis. Same as activity threshold.
+* ```enableMotionWarningDetection(bool isEnabledX, bool isEnabledY, bool isEnabledZ)``` Enable Motion Warning detection for each axis. 
+* ```setReferencedMotionWarningProcessing(bool isReferenced)``` Referenced Motion Warning processing for each axis when true. Absolute processing when false.
+
+#### Timing
 * ```setOdr(Odr odr)``` Sets the ODR. Default is 400Hz. 
     
     ODR options:
@@ -54,6 +62,7 @@ This accelerometer is packed with features, so check out the [simple example her
 
 * ```enableExternalClock(bool isEnabled)``` Enables external clock. When using this, apply a clock in the INT1 pin.
 * ```enableExternalTrigger(bool isEnabled)``` Enables external triggers. When this enabled, use the INT2 pin as the sync trigger input.
+#### Measure
 * ```setBandwidth(Bandwidth bandwidth)``` Sets the bandwidth of the accelerometer. Default is 200Hz. Please use up to half of the ODR to unsure the Nyquist criteria. 
     
     Bandwidth options:
@@ -72,7 +81,7 @@ This accelerometer is packed with features, so check out the [simple example her
     3. ```LOOPED``` 
 
 * ```enableAutosleep(bool isEnabled)``` Enables Autosleep mode when set to true. If activity processing is set to ```DEFAULT```, this bit will be ignored.
-
+#### Power Control
 * ```setOperatingMode(OperatingMode opMode)``` Sets the accelerometer operating mode. 
 
     Operating mode options:

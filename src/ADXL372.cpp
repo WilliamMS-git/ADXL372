@@ -51,6 +51,13 @@
 #define TIME_INACT_H 0x30 // Inactivity time register
 #define TIME_INACT_L 0x31
 
+#define THRESH_ACT2_X_H 0x32 // Motion Warning Threshold register
+#define THRESH_ACT2_X_L 0x33
+#define THRESH_ACT2_Y_H 0x34
+#define THRESH_ACT2_Y_L 0x35
+#define THRESH_ACT2_Z_H 0x36
+#define THRESH_ACT2_Z_L 0x37
+
 #define FIFO_SAMPLES 0x39 // FIFO samples register
 #define FIFO_CTL 0x3A     // FIFO control register
 
@@ -68,6 +75,10 @@
 #define THRESH_INACT_L_MASK 0x1F // Inactivity detection
 #define INACT_EN_MASK 0xFE
 #define INACT_REF_MASK 0xFD
+
+#define THRESH_ACT2_L_MASK 0x1F // Motion Warning
+#define ACT2_EN_MASK 0xFE
+#define ACT2_REF_MASK 0xFD
 
 #define FIFO_SAMPLES_8_MASK 0xFE // FIFO control
 #define FIFO_MODE_MASK 0xF9
@@ -246,10 +257,8 @@ void ADXL372class::enableActivityDetection(bool isEnabledX, bool isEnabledY, boo
     updateRegister(THRESH_ACT_Z_L, isEnabledZ, ACT_EN_MASK);
 }
 
-void ADXL372class::setReferencedActivityProcessing(bool isReferencedX, bool isReferencedY, bool isReferencedZ) {
-    updateRegister(THRESH_ACT_X_L, isReferencedX << 1, ACT_REF_MASK); // bit 1 in register
-    updateRegister(THRESH_ACT_Y_L, isReferencedY << 1, ACT_REF_MASK);
-    updateRegister(THRESH_ACT_Z_L, isReferencedZ << 1, ACT_REF_MASK);
+void ADXL372class::setReferencedActivityProcessing(bool isReferenced) {
+    updateRegister(THRESH_ACT_X_L, isReferenced << 1, ACT_REF_MASK); // bit 1 in register
 }
 
 void ADXL372class::setActivityTimer(uint8_t timerPeriod) {
@@ -281,10 +290,8 @@ void ADXL372class::enableInactivityDetection(bool isEnabledX, bool isEnabledY, b
     updateRegister(THRESH_ACT_Z_L, isEnabledZ, ACT_EN_MASK);
 }
 
-void ADXL372class::setReferencedInactivityProcessing(bool isReferencedX, bool isReferencedY, bool isReferencedZ) {
-    updateRegister(THRESH_INACT_X_L, isReferencedX << 1, INACT_REF_MASK); // bit 1 in register
-    updateRegister(THRESH_INACT_Y_L, isReferencedY << 1, INACT_REF_MASK);
-    updateRegister(THRESH_INACT_Z_L, isReferencedZ << 1, INACT_REF_MASK);
+void ADXL372class::setReferencedInactivityProcessing(bool isReferenced) {
+    updateRegister(THRESH_INACT_X_L, isReferenced << 1, INACT_REF_MASK);
 }
 
 void ADXL372class::setInactivityTimer(uint16_t timerPeriod) {
@@ -293,6 +300,29 @@ void ADXL372class::setInactivityTimer(uint16_t timerPeriod) {
     
     writeRegister(TIME_INACT_H, timerPeriodH);
     writeRegister(TIME_INACT_L, timerPeriodL);
+}
+
+void ADXL372class::setMotionWarningThresholds(uint16_t xThreshold, uint16_t yThreshold, uint16_t zThreshold) {
+    uint8_t xThresh8Msb = formatThresholdValue(xThreshold);
+    writeRegister(THRESH_ACT2_X_H, xThresh8Msb);
+    updateRegister(THRESH_ACT2_X_L, (xThreshold << 5), THRESH_ACT2_L_MASK);
+
+    uint8_t yThresh8Msb = formatThresholdValue(yThreshold);
+    writeRegister(THRESH_ACT2_Y_H, yThresh8Msb);
+    updateRegister(THRESH_ACT2_Y_L, (yThreshold << 5), THRESH_ACT2_L_MASK);
+
+    uint8_t zThresh8Msb = formatThresholdValue(zThreshold);
+    writeRegister(THRESH_ACT2_Z_H, zThresh8Msb);
+    updateRegister(THRESH_ACT2_Z_L, (zThreshold << 5), THRESH_ACT2_L_MASK);
+}
+void ADXL372class::enableMotionWarningDetection(bool isEnabledX, bool isEnabledY, bool isEnabledZ) {
+    updateRegister(THRESH_ACT2_X_L, isEnabledX, ACT_EN_MASK); // bit 1 in register
+    updateRegister(THRESH_ACT2_Y_L, isEnabledY, ACT_EN_MASK);
+    updateRegister(THRESH_ACT2_Z_L, isEnabledZ, ACT_EN_MASK);
+}
+void ADXL372class::setReferencedMotionWarningProcessing(bool isReferenced) {
+    updateRegister(THRESH_ACT2_X_L, isReferenced << 1, ACT2_REF_MASK);
+
 }
 
 void ADXL372class::readFifoData(uint16_t *fifoData)
@@ -379,6 +409,14 @@ void ADXL372class::enableLowNoiseOperation(bool isEnabled)
 
 void ADXL372class::setLinkLoopActivityProcessing(LinkLoop activityProcessing)
 {
+    if (activityProcessing == LINKED | LOOPED){
+        // Check if Activity and Inactivity detection is enabled
+        if((readRegister(THRESH_ACT_X_L) & ACT_EN_MASK) == false | (readRegister(THRESH_ACT_Y_L) & ACT_EN_MASK) == false | (readRegister(THRESH_ACT_Z_L) & ACT_EN_MASK) == false |
+        (readRegister(THRESH_INACT_X_L) & ACT_EN_MASK) == false | (readRegister(THRESH_INACT_Y_L) & ACT_EN_MASK) == false | (readRegister(THRESH_INACT_Z_L) & ACT_EN_MASK) == false) 
+        {
+            Serial.println("WARNING: Activity and Inactivity detection must be enabled");
+        }
+    }
     byte valueShifted = activityProcessing << 2; // bit 2 in register
     updateRegister(MEASURE, valueShifted, LINKLOOP_MASK);
 }
