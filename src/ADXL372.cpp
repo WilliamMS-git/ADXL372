@@ -28,6 +28,19 @@
 // System registers
 #define STATUS 0x04 // Status register
 
+#define OFFSET_X 0x20
+#define OFFSET_Y 0x21
+#define OFFSET_Z 0x22
+
+#define THRESH_ACT_X_H 0x23 // Activity threshold register
+#define THRESH_ACT_X_L 0x24
+#define THRESH_ACT_Y_H 0x25
+#define THRESH_ACT_Y_L 0x26
+#define THRESH_ACT_Z_H 0x27
+#define THRESH_ACT_Z_L 0x28
+
+#define TIME_ACT 0x29 // Activity time register
+
 #define FIFO_SAMPLES 0x39 // FIFO samples register
 #define FIFO_CTL 0x3A     // FIFO control register
 
@@ -38,9 +51,7 @@
 #define FIFO_DATA 0x42 // FIFO data register
 
 // System bitmasks
-#define OFFSET_X 0x20
-#define OFFSET_Y 0x21
-#define OFFSET_Z 0x22
+#define THRESH_ACT_L_MASK 0x1F
 
 #define FIFO_SAMPLES_8_MASK 0xFE // FIFO control
 #define FIFO_MODE_MASK 0xF9
@@ -188,6 +199,38 @@ void ADXL372class::setOffsetTrims(OffsetTrims xOffset, OffsetTrims yOffset, Offs
     writeRegister(OFFSET_X, xOffset);
     writeRegister(OFFSET_Y, yOffset);
     writeRegister(OFFSET_Z, zOffset);
+}
+
+uint8_t ADXL372class::formatThresholdValue(uint16_t thresholdValue) {
+    if (thresholdValue > 0x7FF) // The threshold value is an 11-bit value. So the max limit is 0x7FF. 
+    {
+        Serial.println("WARNING: Threshold value limit is 2047");
+    }
+    return thresholdValue = thresholdValue >> 3; // Get 8 MSB
+}
+
+void ADXL372class::setActivityThresholds(uint16_t xThreshold, uint16_t yThreshold, uint16_t zThreshold) {
+    
+    uint8_t xThresh8Msb = formatThresholdValue(xThreshold);
+    writeRegister(THRESH_ACT_X_H, xThresh8Msb);
+    updateRegister(THRESH_ACT_X_L, (xThreshold << 5), THRESH_ACT_L_MASK);
+
+    uint8_t yThresh8Msb = formatThresholdValue(yThreshold);
+    writeRegister(THRESH_ACT_Y_H, yThresh8Msb);
+    updateRegister(THRESH_ACT_Y_L, (yThreshold << 5), THRESH_ACT_L_MASK);
+
+    uint8_t zThresh8Msb = formatThresholdValue(zThreshold);
+    writeRegister(THRESH_ACT_Z_H, zThresh8Msb);
+    updateRegister(THRESH_ACT_Z_L, (zThreshold << 5), THRESH_ACT_L_MASK);
+}
+
+void ADXL372class::setActivityTimer(uint8_t timerPeriod) {
+    uint8_t currentOpMode = readRegister(POWER_CTL);
+    currentOpMode &= 0b11; // Get only the MODE bits
+    if (currentOpMode != FULL_BANDWIDTH) {
+        Serial.println("WARNING: The activity timer is operational in measurement mode only");
+    }
+    writeRegister(TIME_ACT, timerPeriod);
 }
 
 void ADXL372class::readFifoData(uint16_t *fifoData)

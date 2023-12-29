@@ -10,6 +10,8 @@ setStatusCheck	KEYWORD2
 readAcceleration	KEYWORD2
 readPeakAcceleration	KEYWORD2
 setOffsetTrims	KEYWORD2
+setActivityThresholds	KEYWORD2
+setActivityTimer	KEYWORD2
 printdevice	KEYWORD2
 setBandwidth	KEYWORD2
 setOdr	KEYWORD2

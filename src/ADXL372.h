@@ -114,6 +114,9 @@ public:
 
     void setOffsetTrims(OffsetTrims xOffset, OffsetTrims yOffset, OffsetTrims zOffset);
 
+    void setActivityThresholds(uint16_t xThreshold, uint16_t yThreshold, uint16_t zThreshold);
+    void setActivityTimer(uint8_t timerPeriod);
+
     void readFifoData(uint16_t *fifoData);
     void setFifoSamples(int sampleSize);
     void setFifoMode(FifoMode mode);
@@ -141,6 +144,8 @@ private:
     int m_bandwidth = 0;
     bool m_isCheckingStatus = true;
     int m_sampleSize;
+
+    uint8_t formatThresholdValue(uint16_t thresholdValue);
 
     uint8_t readRegister(byte regAddress);
     void writeRegister(byte regAddress, uint8_t value);
