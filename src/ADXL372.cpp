@@ -12,12 +12,12 @@
 #define ZDATA_L 0x0D
 
 // Peak Data registers.
-#define  MAXPEAK_X_H 0x15
-#define  MAXPEAK_X_L 0x16
-#define  MAXPEAK_Y_H 0x17
-#define  MAXPEAK_Y_L 0x18
-#define  MAXPEAK_Z_H 0x19
-#define  MAXPEAK_Z_L 0x1A
+#define MAXPEAK_X_H 0x15
+#define MAXPEAK_X_L 0x16
+#define MAXPEAK_Y_H 0x17
+#define MAXPEAK_Y_L 0x18
+#define MAXPEAK_Z_H 0x19
+#define MAXPEAK_Z_L 0x1A
 
 // ID registers
 #define DEVID_AD 0x00
@@ -61,6 +61,9 @@
 #define FIFO_SAMPLES 0x39 // FIFO samples register
 #define FIFO_CTL 0x3A     // FIFO control register
 
+#define INT1_MAP 0x3B // Interrupt 1 & 2 map register
+#define INT2_MAP 0x3C
+
 #define TIMING 0x3D    // Timing control register
 #define MEASURE 0x3E   // Measurement control register
 #define POWER_CTL 0x3F // Power control register
@@ -83,6 +86,8 @@
 #define FIFO_SAMPLES_8_MASK 0xFE // FIFO control
 #define FIFO_MODE_MASK 0xF9
 #define FIFO_FORMAT_MASK 0xC7
+
+#define INT_MAP_MASK 0xFF // Interrupt 1 and 2
 
 #define EXT_SYNC_MASK 0xFE // Timing
 #define EXT_CLK_MASK 0xFD
@@ -204,9 +209,9 @@ void ADXL372class::readPeakAcceleration(float &xPeak, float &yPeak, float &zPeak
         do
         {
             status = readRegister(0x04);
-        } while ((status & 0x01) == 0); 
+        } while ((status & 0x01) == 0);
     }
-    
+
     short rawX = readRegister(MAXPEAK_X_H) << 8 | readRegister(MAXPEAK_X_L);
     short rawY = readRegister(MAXPEAK_Y_H) << 8 | readRegister(MAXPEAK_Y_L);
     short rawZ = readRegister(MAXPEAK_Z_H) << 8 | readRegister(MAXPEAK_Z_L);
@@ -221,23 +226,26 @@ void ADXL372class::readPeakAcceleration(float &xPeak, float &yPeak, float &zPeak
     zPeak = rawZ * SCALE_FACTOR * MG_TO_G;
 }
 
-void ADXL372class::setOffsetTrims(OffsetTrims xOffset, OffsetTrims yOffset, OffsetTrims zOffset){
+void ADXL372class::setOffsetTrims(OffsetTrims xOffset, OffsetTrims yOffset, OffsetTrims zOffset)
+{
     // No need to mask or bitshift for the offset registers
     writeRegister(OFFSET_X, xOffset);
     writeRegister(OFFSET_Y, yOffset);
     writeRegister(OFFSET_Z, zOffset);
 }
 
-uint8_t ADXL372class::formatThresholdValue(uint16_t thresholdValue) {
-    if (thresholdValue > 0x7FF) // The threshold value is an 11-bit value. So the max limit is 0x7FF. 
+uint8_t ADXL372class::formatThresholdValue(uint16_t thresholdValue)
+{
+    if (thresholdValue > 0x7FF) // The threshold value is an 11-bit value. So the max limit is 0x7FF.
     {
         Serial.println("WARNING: Threshold value limit is 2047");
     }
     return thresholdValue = thresholdValue >> 3; // Get 8 MSB
 }
 
-void ADXL372class::setActivityThresholds(uint16_t xThreshold, uint16_t yThreshold, uint16_t zThreshold) {
-    
+void ADXL372class::setActivityThresholds(uint16_t xThreshold, uint16_t yThreshold, uint16_t zThreshold)
+{
+
     uint8_t xThresh8Msb = formatThresholdValue(xThreshold);
     writeRegister(THRESH_ACT_X_H, xThresh8Msb);
     updateRegister(THRESH_ACT_X_L, (xThreshold << 5), THRESH_ACT_L_MASK);
@@ -251,26 +259,31 @@ void ADXL372class::setActivityThresholds(uint16_t xThreshold, uint16_t yThreshol
     updateRegister(THRESH_ACT_Z_L, (zThreshold << 5), THRESH_ACT_L_MASK);
 }
 
-void ADXL372class::enableActivityDetection(bool isEnabledX, bool isEnabledY, bool isEnabledZ) {
+void ADXL372class::enableActivityDetection(bool isEnabledX, bool isEnabledY, bool isEnabledZ)
+{
     updateRegister(THRESH_ACT_X_L, isEnabledX, ACT_EN_MASK); // bit 1 in register
     updateRegister(THRESH_ACT_Y_L, isEnabledY, ACT_EN_MASK);
     updateRegister(THRESH_ACT_Z_L, isEnabledZ, ACT_EN_MASK);
 }
 
-void ADXL372class::setReferencedActivityProcessing(bool isReferenced) {
+void ADXL372class::setReferencedActivityProcessing(bool isReferenced)
+{
     updateRegister(THRESH_ACT_X_L, isReferenced << 1, ACT_REF_MASK); // bit 1 in register
 }
 
-void ADXL372class::setActivityTimer(uint8_t timerPeriod) {
+void ADXL372class::setActivityTimer(uint8_t timerPeriod)
+{
     uint8_t currentOpMode = readRegister(POWER_CTL);
     currentOpMode &= 0b11; // Get only the MODE bits
-    if (currentOpMode != FULL_BANDWIDTH) {
+    if (currentOpMode != FULL_BANDWIDTH)
+    {
         Serial.println("WARNING: The activity timer is operational in measurement mode only");
     }
     writeRegister(TIME_ACT, timerPeriod);
 }
 
-void ADXL372class::setInactivityThresholds(uint16_t xThreshold, uint16_t yThreshold, uint16_t zThreshold) {
+void ADXL372class::setInactivityThresholds(uint16_t xThreshold, uint16_t yThreshold, uint16_t zThreshold)
+{
     uint8_t xThresh8Msb = formatThresholdValue(xThreshold);
     writeRegister(THRESH_INACT_X_H, xThresh8Msb);
     updateRegister(THRESH_INACT_X_L, (xThreshold << 5), THRESH_INACT_L_MASK);
@@ -284,25 +297,29 @@ void ADXL372class::setInactivityThresholds(uint16_t xThreshold, uint16_t yThresh
     updateRegister(THRESH_INACT_Z_L, (zThreshold << 5), THRESH_INACT_L_MASK);
 }
 
-void ADXL372class::enableInactivityDetection(bool isEnabledX, bool isEnabledY, bool isEnabledZ) {
+void ADXL372class::enableInactivityDetection(bool isEnabledX, bool isEnabledY, bool isEnabledZ)
+{
     updateRegister(THRESH_ACT_X_L, isEnabledX, ACT_EN_MASK); // bit 1 in register
     updateRegister(THRESH_ACT_Y_L, isEnabledY, ACT_EN_MASK);
     updateRegister(THRESH_ACT_Z_L, isEnabledZ, ACT_EN_MASK);
 }
 
-void ADXL372class::setReferencedInactivityProcessing(bool isReferenced) {
+void ADXL372class::setReferencedInactivityProcessing(bool isReferenced)
+{
     updateRegister(THRESH_INACT_X_L, isReferenced << 1, INACT_REF_MASK);
 }
 
-void ADXL372class::setInactivityTimer(uint16_t timerPeriod) {
+void ADXL372class::setInactivityTimer(uint16_t timerPeriod)
+{
     uint8_t timerPeriodH = timerPeriod >> 8;
     uint8_t timerPeriodL = timerPeriod;
-    
+
     writeRegister(TIME_INACT_H, timerPeriodH);
     writeRegister(TIME_INACT_L, timerPeriodL);
 }
 
-void ADXL372class::setMotionWarningThresholds(uint16_t xThreshold, uint16_t yThreshold, uint16_t zThreshold) {
+void ADXL372class::setMotionWarningThresholds(uint16_t xThreshold, uint16_t yThreshold, uint16_t zThreshold)
+{
     uint8_t xThresh8Msb = formatThresholdValue(xThreshold);
     writeRegister(THRESH_ACT2_X_H, xThresh8Msb);
     updateRegister(THRESH_ACT2_X_L, (xThreshold << 5), THRESH_ACT2_L_MASK);
@@ -315,21 +332,23 @@ void ADXL372class::setMotionWarningThresholds(uint16_t xThreshold, uint16_t yThr
     writeRegister(THRESH_ACT2_Z_H, zThresh8Msb);
     updateRegister(THRESH_ACT2_Z_L, (zThreshold << 5), THRESH_ACT2_L_MASK);
 }
-void ADXL372class::enableMotionWarningDetection(bool isEnabledX, bool isEnabledY, bool isEnabledZ) {
+void ADXL372class::enableMotionWarningDetection(bool isEnabledX, bool isEnabledY, bool isEnabledZ)
+{
     updateRegister(THRESH_ACT2_X_L, isEnabledX, ACT_EN_MASK); // bit 1 in register
     updateRegister(THRESH_ACT2_Y_L, isEnabledY, ACT_EN_MASK);
     updateRegister(THRESH_ACT2_Z_L, isEnabledZ, ACT_EN_MASK);
 }
-void ADXL372class::setReferencedMotionWarningProcessing(bool isReferenced) {
+void ADXL372class::setReferencedMotionWarningProcessing(bool isReferenced)
+{
     updateRegister(THRESH_ACT2_X_L, isReferenced << 1, ACT2_REF_MASK);
-
 }
 
 void ADXL372class::readFifoData(uint16_t *fifoData)
 {
     digitalWrite(m_csPin, LOW);
     SPI.transfer(FIFO_DATA << 1 | 1);
-    for(int i = 0; i < m_sampleSize; i++) {
+    for (int i = 0; i < m_sampleSize; i++)
+    {
         fifoData[i * 3] = SPI.transfer16(0x00);
         fifoData[i * 3 + 1] = SPI.transfer16(0x00);
         fifoData[i * 3 + 2] = SPI.transfer16(0x00);
@@ -361,6 +380,26 @@ void ADXL372class::setFifoFormat(FifoFormat format)
 {
     byte formatShifted = format << 3; // starts from bit 3 in register
     updateRegister(FIFO_CTL, formatShifted, FIFO_FORMAT_MASK);
+}
+
+void ADXL372class::selectInt1Function(InterruptFunction function)
+{
+    updateRegister(INT1_MAP, function, INT_MAP_MASK);
+}
+
+void ADXL372class::selectInt1Functions(uint8_t function)
+{
+    writeRegister(INT1_MAP, function);
+}
+
+void ADXL372class::selectInt2Function(InterruptFunction function)
+{
+    updateRegister(INT2_MAP, function, INT_MAP_MASK);
+}
+
+void ADXL372class::selectInt2Functions(uint8_t function)
+{
+    writeRegister(INT2_MAP, function);
 }
 
 void ADXL372class::setOdr(Odr odr)
@@ -409,10 +448,11 @@ void ADXL372class::enableLowNoiseOperation(bool isEnabled)
 
 void ADXL372class::setLinkLoopActivityProcessing(LinkLoop activityProcessing)
 {
-    if (activityProcessing == LINKED | LOOPED){
+    if (activityProcessing == LINKED | LOOPED)
+    {
         // Check if Activity and Inactivity detection is enabled
-        if((readRegister(THRESH_ACT_X_L) & ACT_EN_MASK) == false | (readRegister(THRESH_ACT_Y_L) & ACT_EN_MASK) == false | (readRegister(THRESH_ACT_Z_L) & ACT_EN_MASK) == false |
-        (readRegister(THRESH_INACT_X_L) & ACT_EN_MASK) == false | (readRegister(THRESH_INACT_Y_L) & ACT_EN_MASK) == false | (readRegister(THRESH_INACT_Z_L) & ACT_EN_MASK) == false) 
+        if ((readRegister(THRESH_ACT_X_L) & ACT_EN_MASK) == false | (readRegister(THRESH_ACT_Y_L) & ACT_EN_MASK) == false | (readRegister(THRESH_ACT_Z_L) & ACT_EN_MASK) == false |
+            (readRegister(THRESH_INACT_X_L) & ACT_EN_MASK) == false | (readRegister(THRESH_INACT_Y_L) & ACT_EN_MASK) == false | (readRegister(THRESH_INACT_Z_L) & ACT_EN_MASK) == false)
         {
             Serial.println("WARNING: Activity and Inactivity detection must be enabled");
         }

@@ -38,6 +38,14 @@ This accelerometer is packed with features, so check out the [simple example her
 * ```enableMotionWarningDetection(bool isEnabledX, bool isEnabledY, bool isEnabledZ)``` Enable Motion Warning detection for each axis. 
 * ```setReferencedMotionWarningProcessing(bool isReferenced)``` Referenced Motion Warning processing for each axis when true. Absolute processing when false.
 
+#### FIFO
+
+#### Interrupt pins
+* ```selectInt1Function(InterruptFunction function)``` Select an interrupt function for interrupt pin 1
+* ```selectInt1Functions(uint8_t function)``` Select multiple interrupt functions for interrupt pin 1. For example: ```(DATA_RDY | AWAKE)```.
+* ```selectInt2Function(InterruptFunction function)``` Select an interrupt function for interrupt pin 2
+* ```selectInt2Functions(uint8_t function)``` Select multiple interrupt functions for interrupt pin 2.
+
 #### Timing
 * ```setOdr(Odr odr)``` Sets the ODR. Default is 400Hz. 
     

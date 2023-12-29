@@ -21,6 +21,10 @@ setInactivityTimer	KEYWORD2
 setMotionWarningThresholds	KEYWORD2
 enableMotionWarningDetection	KEYWORD2
 setReferencedMotionWarningProcessing	KEYWORD2
+selectInt1Function	KEYWORD2
+selectInt1Functions	KEYWORD2
+selectInt2Function	KEYWORD2
+selectInt2Functions	KEYWORD2
 printdevice	KEYWORD2
 setBandwidth	KEYWORD2
 setOdr	KEYWORD2

@@ -97,6 +97,18 @@ enum InstantOnThreshold
     IOT_HIGH_THRESH = 1
 };
 
+enum InterruptFunction {
+    DATA_RDY = 0b00000000,
+    FIFO_RDY = 0b00000010,
+    FIFO_FULL = 0b00000100,
+    FIFO_OVR = 0b00001000,
+    INACT = 0b00010000,
+    ACT = 0b00100000,
+    ACT2 = 0b00100000,
+    AWAKE = 0b01000000,
+    INT_LOW = 0b10000000
+};
+
 class ADXL372class
 {
 public:
@@ -132,6 +144,11 @@ public:
     void setFifoSamples(int sampleSize);
     void setFifoMode(FifoMode mode);
     void setFifoFormat(FifoFormat format);
+
+    void selectInt1Function(InterruptFunction function);
+    void selectInt1Functions(uint8_t function);
+    void selectInt2Function(InterruptFunction function);
+    void selectInt2Functions(uint8_t function);
 
     void setOdr(Odr odr);
     void setWakeUpRate(WakeUpRate wur);
