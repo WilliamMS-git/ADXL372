@@ -174,6 +174,7 @@ private:
     int m_sampleSize;
 
     uint8_t formatThresholdValue(uint16_t thresholdValue);
+    void checkStandbyMode();
 
     uint8_t readRegister(byte regAddress);
     void writeRegister(byte regAddress, uint8_t value);

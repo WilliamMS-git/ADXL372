@@ -245,7 +245,7 @@ uint8_t ADXL372class::formatThresholdValue(uint16_t thresholdValue)
 
 void ADXL372class::setActivityThresholds(uint16_t xThreshold, uint16_t yThreshold, uint16_t zThreshold)
 {
-
+    checkStandbyMode();
     uint8_t xThresh8Msb = formatThresholdValue(xThreshold);
     writeRegister(THRESH_ACT_X_H, xThresh8Msb);
     updateRegister(THRESH_ACT_X_L, (xThreshold << 5), THRESH_ACT_L_MASK);
@@ -261,6 +261,7 @@ void ADXL372class::setActivityThresholds(uint16_t xThreshold, uint16_t yThreshol
 
 void ADXL372class::enableActivityDetection(bool isEnabledX, bool isEnabledY, bool isEnabledZ)
 {
+    checkStandbyMode();
     updateRegister(THRESH_ACT_X_L, isEnabledX, ACT_EN_MASK); // bit 1 in register
     updateRegister(THRESH_ACT_Y_L, isEnabledY, ACT_EN_MASK);
     updateRegister(THRESH_ACT_Z_L, isEnabledZ, ACT_EN_MASK);
@@ -268,11 +269,13 @@ void ADXL372class::enableActivityDetection(bool isEnabledX, bool isEnabledY, boo
 
 void ADXL372class::setReferencedActivityProcessing(bool isReferenced)
 {
+    checkStandbyMode();
     updateRegister(THRESH_ACT_X_L, isReferenced << 1, ACT_REF_MASK); // bit 1 in register
 }
 
 void ADXL372class::setActivityTimer(uint8_t timerPeriod)
 {
+    checkStandbyMode();
     uint8_t currentOpMode = readRegister(POWER_CTL);
     currentOpMode &= 0b11; // Get only the MODE bits
     if (currentOpMode != FULL_BANDWIDTH)
@@ -284,6 +287,7 @@ void ADXL372class::setActivityTimer(uint8_t timerPeriod)
 
 void ADXL372class::setInactivityThresholds(uint16_t xThreshold, uint16_t yThreshold, uint16_t zThreshold)
 {
+    checkStandbyMode();
     uint8_t xThresh8Msb = formatThresholdValue(xThreshold);
     writeRegister(THRESH_INACT_X_H, xThresh8Msb);
     updateRegister(THRESH_INACT_X_L, (xThreshold << 5), THRESH_INACT_L_MASK);
@@ -299,6 +303,7 @@ void ADXL372class::setInactivityThresholds(uint16_t xThreshold, uint16_t yThresh
 
 void ADXL372class::enableInactivityDetection(bool isEnabledX, bool isEnabledY, bool isEnabledZ)
 {
+    checkStandbyMode();
     updateRegister(THRESH_ACT_X_L, isEnabledX, ACT_EN_MASK); // bit 1 in register
     updateRegister(THRESH_ACT_Y_L, isEnabledY, ACT_EN_MASK);
     updateRegister(THRESH_ACT_Z_L, isEnabledZ, ACT_EN_MASK);
@@ -306,11 +311,13 @@ void ADXL372class::enableInactivityDetection(bool isEnabledX, bool isEnabledY, b
 
 void ADXL372class::setReferencedInactivityProcessing(bool isReferenced)
 {
+    checkStandbyMode();
     updateRegister(THRESH_INACT_X_L, isReferenced << 1, INACT_REF_MASK);
 }
 
 void ADXL372class::setInactivityTimer(uint16_t timerPeriod)
 {
+    checkStandbyMode();
     uint8_t timerPeriodH = timerPeriod >> 8;
     uint8_t timerPeriodL = timerPeriod;
 
@@ -448,6 +455,7 @@ void ADXL372class::enableLowNoiseOperation(bool isEnabled)
 
 void ADXL372class::setLinkLoopActivityProcessing(LinkLoop activityProcessing)
 {
+    checkStandbyMode();
     if (activityProcessing == LINKED | LOOPED)
     {
         // Check if Activity and Inactivity detection is enabled
@@ -494,6 +502,14 @@ void ADXL372class::setInstantOnThreshold(InstantOnThreshold threshold)
 {
     byte valueShifted = threshold << 5; // bit 5 in register
     updateRegister(POWER_CTL, valueShifted, LPF_DISABLE_MASK);
+}
+
+void ADXL372class::checkStandbyMode() {
+   byte mode = readRegister(POWER_CTL);
+   mode &= MODE_MASK;
+   if(mode != STANDBY) {
+        Serial.println("WARNING: Activity, Inactivity and FIFO can only be set while in standy mode");
+   }
 }
 
 uint8_t ADXL372class::readRegister(byte regAddress)
