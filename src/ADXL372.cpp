@@ -352,13 +352,19 @@ void ADXL372class::setReferencedMotionWarningProcessing(bool isReferenced)
 
 void ADXL372class::readFifoData(uint16_t *fifoData)
 {
+    if (m_isCheckingStatus == true)
+    {
+        byte status;
+        do
+        {
+            status = readRegister(0x04);
+        } while ((status & 0x03) == 0); // Waiting for FIFO full
+    }
     digitalWrite(m_csPin, LOW);
     SPI.transfer(FIFO_DATA << 1 | 1);
     for (int i = 0; i < m_sampleSize; i++)
     {
-        fifoData[i * 3] = SPI.transfer16(0x00);
-        fifoData[i * 3 + 1] = SPI.transfer16(0x00);
-        fifoData[i * 3 + 2] = SPI.transfer16(0x00);
+        fifoData[i] = SPI.transfer(0x00) << 8 | SPI.transfer(0x00);
     }
 
     digitalWrite(m_csPin, HIGH);
@@ -366,6 +372,7 @@ void ADXL372class::readFifoData(uint16_t *fifoData)
 
 void ADXL372class::setFifoSamples(int sampleSize)
 {
+    checkStandbyMode();
     if (sampleSize > 512)
     {
         Serial.println("WARNING: FIFO samples limit is 512");
@@ -379,12 +386,14 @@ void ADXL372class::setFifoSamples(int sampleSize)
 
 void ADXL372class::setFifoMode(FifoMode mode)
 {
+    checkStandbyMode();
     byte modeShifted = mode << 1; // starts from bit 1 in register
     updateRegister(FIFO_CTL, modeShifted, FIFO_MODE_MASK);
 }
 
 void ADXL372class::setFifoFormat(FifoFormat format)
 {
+    checkStandbyMode();
     byte formatShifted = format << 3; // starts from bit 3 in register
     updateRegister(FIFO_CTL, formatShifted, FIFO_FORMAT_MASK);
 }
