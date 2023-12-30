@@ -364,10 +364,13 @@ void ADXL372class::readFifoData(uint16_t *fifoData)
     SPI.transfer(FIFO_DATA << 1 | 1);
     for (int i = 0; i < m_sampleSize; i++)
     {
-        fifoData[i] = SPI.transfer(0x00) << 8 | SPI.transfer(0x00);
+      uint8_t msbFifoData = SPI.transfer(0x00);
+      uint8_t lsbFifoData = SPI.transfer(0x00);
+        fifoData[i] =  msbFifoData << 4 | lsbFifoData; // 12 bit data. 8 MSB and 4 LSB.
     }
 
     digitalWrite(m_csPin, HIGH);
+    readRegister(0x04); // Reading the STATUS register (Register 0x04) clears the FIFO_RDY, FIFO_FULL, and FIFO_OVR interrupts
 }
 
 void ADXL372class::setFifoSamples(int sampleSize)
@@ -396,6 +399,13 @@ void ADXL372class::setFifoFormat(FifoFormat format)
     checkStandbyMode();
     byte formatShifted = format << 3; // starts from bit 3 in register
     updateRegister(FIFO_CTL, formatShifted, FIFO_FORMAT_MASK);
+}
+
+void ADXL372class::readFifoRegisters() {
+    Serial.print("FIFO_CTL: ");
+    Serial.println(readRegister(FIFO_CTL), BIN);
+    Serial.print("FIFO_SAMPLES: ");
+    Serial.println(readRegister(FIFO_SAMPLES), BIN);
 }
 
 void ADXL372class::selectInt1Function(InterruptFunction function)
@@ -545,6 +555,6 @@ void ADXL372class::updateRegister(byte regAddress, uint8_t value, byte mask)
     // Need to use bitmasks to only change the desired bits in the registers
     byte registerState = readRegister(regAddress);
     registerState &= mask;
-    value |= registerState & ~mask;
+    value |= registerState;// & ~mask;
     writeRegister(regAddress, value);
 }

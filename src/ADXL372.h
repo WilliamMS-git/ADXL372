@@ -145,6 +145,9 @@ public:
     void setFifoMode(FifoMode mode);
     void setFifoFormat(FifoFormat format);
 
+    // Testing
+    void readFifoRegisters();
+
     void selectInt1Function(InterruptFunction function);
     void selectInt1Functions(uint8_t function);
     void selectInt2Function(InterruptFunction function);
