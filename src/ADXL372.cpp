@@ -304,9 +304,9 @@ void ADXL372class::setInactivityThresholds(uint16_t xThreshold, uint16_t yThresh
 void ADXL372class::enableInactivityDetection(bool isEnabledX, bool isEnabledY, bool isEnabledZ)
 {
     checkStandbyMode();
-    updateRegister(THRESH_ACT_X_L, isEnabledX, ACT_EN_MASK); // bit 1 in register
-    updateRegister(THRESH_ACT_Y_L, isEnabledY, ACT_EN_MASK);
-    updateRegister(THRESH_ACT_Z_L, isEnabledZ, ACT_EN_MASK);
+    updateRegister(THRESH_INACT_X_L, isEnabledX, INACT_EN_MASK);
+    updateRegister(THRESH_INACT_Y_L, isEnabledY, INACT_EN_MASK);
+    updateRegister(THRESH_INACT_Z_L, isEnabledZ, INACT_EN_MASK);
 }
 
 void ADXL372class::setReferencedInactivityProcessing(bool isReferenced)
@@ -357,8 +357,8 @@ void ADXL372class::readFifoData(uint16_t *fifoData)
         byte status;
         do
         {
-            status = readRegister(0x04);
-        } while ((status & 0x03) == 0); // Waiting for FIFO full
+          status = readRegister(0x04);
+        } while ((status & 0x04) == 0); // Waiting for FIFO full
     }
     digitalWrite(m_csPin, LOW);
     SPI.transfer(FIFO_DATA << 1 | 1);
@@ -368,9 +368,7 @@ void ADXL372class::readFifoData(uint16_t *fifoData)
       uint8_t lsbFifoData = SPI.transfer(0x00);
         fifoData[i] =  msbFifoData << 4 | lsbFifoData; // 12 bit data. 8 MSB and 4 LSB.
     }
-
     digitalWrite(m_csPin, HIGH);
-    readRegister(0x04); // Reading the STATUS register (Register 0x04) clears the FIFO_RDY, FIFO_FULL, and FIFO_OVR interrupts
 }
 
 void ADXL372class::setFifoSamples(int sampleSize)
@@ -484,7 +482,7 @@ void ADXL372class::setLinkLoopActivityProcessing(LinkLoop activityProcessing)
             Serial.println("WARNING: Activity and Inactivity detection must be enabled");
         }
     }
-    byte valueShifted = activityProcessing << 2; // bit 2 in register
+    byte valueShifted = activityProcessing << 4; // bit 4 in register
     updateRegister(MEASURE, valueShifted, LINKLOOP_MASK);
 }
 
@@ -557,4 +555,10 @@ void ADXL372class::updateRegister(byte regAddress, uint8_t value, byte mask)
     registerState &= mask;
     value |= registerState;// & ~mask;
     writeRegister(regAddress, value);
+}
+
+void ADXL372class::testRegister(byte regAddress, uint8_t value, byte mask){
+    updateRegister(regAddress, value, mask);
+    delay(100); // making sure register is set
+    Serial.println(readRegister(regAddress), BIN);
 }

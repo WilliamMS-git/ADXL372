@@ -145,9 +145,6 @@ public:
     void setFifoMode(FifoMode mode);
     void setFifoFormat(FifoFormat format);
 
-    // Testing
-    void readFifoRegisters();
-
     void selectInt1Function(InterruptFunction function);
     void selectInt1Functions(uint8_t function);
     void selectInt2Function(InterruptFunction function);
@@ -182,4 +179,9 @@ private:
     uint8_t readRegister(byte regAddress);
     void writeRegister(byte regAddress, uint8_t value);
     void updateRegister(byte regAddress, uint8_t value, byte mask);
+
+public:
+    // Testing
+    void readFifoRegisters();
+    void testRegister(byte regAddress, uint8_t value, byte mask);
 };
