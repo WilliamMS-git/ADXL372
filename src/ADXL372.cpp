@@ -127,15 +127,12 @@ void ADXL372class::begin()
     digitalWrite(m_csPin, HIGH);                                       // Pin ready
 }
 
-void ADXL372class::begin(Bandwidth bandwidth, Odr odr)
+void ADXL372class::begin(uint32_t spiClockSpeed)
 {
     SPI.begin();
-    SPI.beginTransaction(SPISettings(SPI_SPEED, MSBFIRST, SPI_MODE0)); // CPHA = CPOL = 0
+    SPI.beginTransaction(SPISettings(spiClockSpeed, MSBFIRST, SPI_MODE0)); // CPHA = CPOL = 0
     pinMode(m_csPin, OUTPUT);                                          // Setting chip select pin
     digitalWrite(m_csPin, HIGH);                                       // Pin ready
-
-    setOdr(odr);
-    setBandwidth(bandwidth);
 }
 
 void ADXL372class::end()

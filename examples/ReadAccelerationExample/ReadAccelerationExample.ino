@@ -1,6 +1,6 @@
 #include "ADXL372.h"
 
-ADXL372class acc(10); //Pin 10 as CS pin of the accelerometer. Use the corresponding pin on your own board
+ADXL372class ADXL372(10); //Pin 10 as CS pin of the accelerometer. Use the corresponding pin on your own board
 
 float x = 0.0;
 float y = 0.0;
@@ -8,13 +8,13 @@ float z = 0.0;
 
 void setup() {
   Serial.begin(9600);
-  acc.begin(); 
-  acc.printDevice();
-  acc.setStatusCheck(false); // Delete this line or, let this to true if you want to wait for data to be ready
+  ADXL372.begin(); 
+  ADXL372.printDevice();
+  ADXL372.setStatusCheck(false); // Delete this line or, let this to true if you want to wait for data to be ready
 }
 
 void loop() {
-  acc.readAcceleration(x, y, z);
+  ADXL372.readAcceleration(x, y, z);
 
   Serial.println("Acceleration:");
   Serial.print("X: ");
