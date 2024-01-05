@@ -116,7 +116,7 @@ public:
     virtual ~ADXL372class();
 
     void begin();
-    void begin(Bandwidth bandwidth, Odr odr);
+    void begin(uint32_t spiClockSpeed);
     void end();
     void printDevice();
     void setStatusCheck(bool isCheckingStatus);
