@@ -15,6 +15,8 @@ This library uses SPI as communication with the accelerometer. I²C is supported
 This accelerometer is packed with features, so check out the [simple example here](https://github.com/Fourier-git/ADXL372/blob/main/examples/ReadAccelerationExample/ReadAccelerationExample.ino) for the minimum requirements for continuously reading the 3-axis acceleration.
 
 * ```ADXL372class(csPin)``` Create an ADXL372 object with the CS (Chip select) pin.
+* ```begin()``` Call this to initiate the accelerometer.
+* ```begin(uint32_t spiClockSpeed)``` Initiate with a custom spi clock speed. 
 * ```printDevice()``` Print the device's Analog Devices ID, device ID, MEMS ID, revision ID and Device Status.
 #### Reading Acceleration
 * ```setStatusCheck(bool isCheckingStatus)``` Sets if you want to check if the data is ready or not, before reading the acceleration data.

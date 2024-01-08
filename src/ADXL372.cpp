@@ -550,7 +550,7 @@ void ADXL372class::updateRegister(byte regAddress, uint8_t value, byte mask)
     // Need to use bitmasks to only change the desired bits in the registers
     byte registerState = readRegister(regAddress);
     registerState &= mask;
-    value |= registerState;// & ~mask;
+    value |= registerState;
     writeRegister(regAddress, value);
 }
 
