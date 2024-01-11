@@ -10,7 +10,6 @@ void setup() {
   Serial.begin(9600);
   ADXL372.begin(); 
   ADXL372.printDevice();
-  ADXL372.setStatusCheck(false); // Delete this line or, let this to true if you want to wait for data to be ready
 }
 
 void loop() {

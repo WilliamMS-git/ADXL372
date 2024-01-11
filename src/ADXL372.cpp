@@ -172,22 +172,13 @@ void ADXL372class::printDevice()
     Serial.println(status, HEX);
 }
 
-void ADXL372class::setStatusCheck(bool isCheckingStatus)
-{
-    m_isCheckingStatus = isCheckingStatus;
-}
-
 void ADXL372class::readAcceleration(float &x, float &y, float &z)
 {
-
-    if (m_isCheckingStatus == true)
+    byte status;
+    do
     {
-        byte status;
-        do
-        {
-            status = readRegister(0x04);
-        } while ((status & 0x01) == 0); // Waiting for status register
-    }
+        status = readRegister(0x04);
+    } while ((status & 0x01) == 0); // Waiting for status register
 
     // The register is left justified. *DATA_H has bits 11:4 of the register. *DATA_L has bits 3:0.
     short rawX = readRegister(XDATA_H) << 8 | readRegister(XDATA_L);
@@ -206,14 +197,11 @@ void ADXL372class::readAcceleration(float &x, float &y, float &z)
 
 void ADXL372class::readPeakAcceleration(float &xPeak, float &yPeak, float &zPeak)
 {
-    if (m_isCheckingStatus == true)
+   byte status;
+    do
     {
-        byte status;
-        do
-        {
-            status = readRegister(0x04);
-        } while ((status & 0x01) == 0);
-    }
+        status = readRegister(0x04);
+    } while ((status & 0x01) == 0);
 
     short rawX = readRegister(MAXPEAK_X_H) << 8 | readRegister(MAXPEAK_X_L);
     short rawY = readRegister(MAXPEAK_Y_H) << 8 | readRegister(MAXPEAK_Y_L);
@@ -355,14 +343,12 @@ void ADXL372class::setReferencedMotionWarningProcessing(bool isReferenced)
 
 void ADXL372class::readFifoData(uint16_t *fifoData)
 {
-    if (m_isCheckingStatus == true)
+    byte status;
+    do
     {
-        byte status;
-        do
-        {
-            status = readRegister(0x04);
-        } while ((status & 0x04) == 0); // Waiting for FIFO full
-    }
+        status = readRegister(0x04);
+    } while ((status & 0x04) == 0); // Waiting for FIFO full
+
     digitalWrite(m_csPin, LOW);
     SPI.transfer(FIFO_DATA << 1 | 1);
     for (int i = 0; i < m_sampleSize; i++)

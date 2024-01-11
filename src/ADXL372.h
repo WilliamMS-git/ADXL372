@@ -119,7 +119,6 @@ public:
     void begin(uint32_t spiClockSpeed);
     void end();
     void printDevice();
-    void setStatusCheck(bool isCheckingStatus);
 
     void readAcceleration(float &x, float &y, float &z);
     void readPeakAcceleration(float &x, float &y, float &z);
@@ -168,7 +167,6 @@ public:
 
 private:
     int m_csPin;
-    bool m_isCheckingStatus = true;
     int m_sampleSize;
 
     uint8_t formatThresholdValue(uint16_t thresholdValue);
