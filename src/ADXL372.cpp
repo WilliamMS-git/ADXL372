@@ -68,6 +68,8 @@
 #define MEASURE 0x3E   // Measurement control register
 #define POWER_CTL 0x3F // Power control register
 
+#define SELF_TEST 0x40 // Self test register
+#define RESET 0x41     // Reset register
 #define FIFO_DATA 0x42 // FIFO data register
 
 // System bitmasks
@@ -105,6 +107,10 @@
 #define FILTER_SETTLE_MASK 0xEF
 #define INSTANT_ON_THRESH_MASK 0xDF
 
+#define ST_MASK 0xFE // Self test
+#define ST_DONE_MASK 0xFD
+#define USER_ST_MASK 0xFB
+
 // Accelerometer Constants
 #define SPI_SPEED 10000000 // ADXL372 supports up to 10MHz in SCLK frequency
 #define SCALE_FACTOR 100   // mg per LSB
@@ -131,8 +137,8 @@ void ADXL372class::begin(uint32_t spiClockSpeed)
 {
     SPI.begin();
     SPI.beginTransaction(SPISettings(spiClockSpeed, MSBFIRST, SPI_MODE0)); // CPHA = CPOL = 0
-    pinMode(m_csPin, OUTPUT);                                          // Setting chip select pin
-    digitalWrite(m_csPin, HIGH);                                       // Pin ready
+    pinMode(m_csPin, OUTPUT);                                              // Setting chip select pin
+    digitalWrite(m_csPin, HIGH);                                           // Pin ready
 }
 
 void ADXL372class::end()
@@ -354,16 +360,16 @@ void ADXL372class::readFifoData(uint16_t *fifoData)
         byte status;
         do
         {
-          status = readRegister(0x04);
+            status = readRegister(0x04);
         } while ((status & 0x04) == 0); // Waiting for FIFO full
     }
     digitalWrite(m_csPin, LOW);
     SPI.transfer(FIFO_DATA << 1 | 1);
     for (int i = 0; i < m_sampleSize; i++)
     {
-      uint8_t msbFifoData = SPI.transfer(0x00);
-      uint8_t lsbFifoData = SPI.transfer(0x00);
-        fifoData[i] =  msbFifoData << 4 | lsbFifoData; // 12 bit data. 8 MSB and 4 LSB.
+        uint8_t msbFifoData = SPI.transfer(0x00);
+        uint8_t lsbFifoData = SPI.transfer(0x00);
+        fifoData[i] = msbFifoData << 4 | lsbFifoData; // 12 bit data. 8 MSB and 4 LSB.
     }
     digitalWrite(m_csPin, HIGH);
 }
@@ -394,13 +400,6 @@ void ADXL372class::setFifoFormat(FifoFormat format)
     checkStandbyMode();
     byte formatShifted = format << 3; // starts from bit 3 in register
     updateRegister(FIFO_CTL, formatShifted, FIFO_FORMAT_MASK);
-}
-
-void ADXL372class::readFifoRegisters() {
-    Serial.print("FIFO_CTL: ");
-    Serial.println(readRegister(FIFO_CTL), BIN);
-    Serial.print("FIFO_SAMPLES: ");
-    Serial.println(readRegister(FIFO_SAMPLES), BIN);
 }
 
 void ADXL372class::selectInt1Function(InterruptFunction function)
@@ -518,12 +517,14 @@ void ADXL372class::setInstantOnThreshold(InstantOnThreshold threshold)
     updateRegister(POWER_CTL, valueShifted, LPF_DISABLE_MASK);
 }
 
-void ADXL372class::checkStandbyMode() {
-   byte mode = readRegister(POWER_CTL);
-   mode &= MODE_MASK;
-   if(mode != STANDBY) {
+void ADXL372class::checkStandbyMode()
+{
+    byte mode = readRegister(POWER_CTL);
+    mode &= MODE_MASK;
+    if (mode != STANDBY)
+    {
         Serial.println("WARNING: Activity, Inactivity and FIFO can only be set while in standy mode");
-   }
+    }
 }
 
 uint8_t ADXL372class::readRegister(byte regAddress)
@@ -554,8 +555,20 @@ void ADXL372class::updateRegister(byte regAddress, uint8_t value, byte mask)
     writeRegister(regAddress, value);
 }
 
-void ADXL372class::testRegister(byte regAddress, uint8_t value, byte mask){
-    updateRegister(regAddress, value, mask);
-    delay(100); // making sure register is set
-    Serial.println(readRegister(regAddress), BIN);
+bool ADXL372class::selfTest()
+{
+    // Self test procedure (Page 27 in datasheet)
+    setOperatingMode(FULL_BANDWIDTH);
+    setFilterSettling(FSP_370ms);
+    updateRegister(SELF_TEST, true, ST_MASK);
+    delay(300);
+
+    if ((readRegister(SELF_TEST) & ST_DONE_MASK) == false)
+    {
+        Serial.println("Self Test was not finished");
+        return false;
+    }
+
+    bool isTestPassed = readRegister(SELF_TEST) & USER_ST_MASK;
+    return isTestPassed;
 }

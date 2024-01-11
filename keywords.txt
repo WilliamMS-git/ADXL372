@@ -38,6 +38,7 @@ disableHighPassFilter	KEYWORD2
 disableLowPassFilter	KEYWORD2
 setFilterSettling	KEYWORD2
 setInstantOnThreshold	KEYWORD2
+selfTest	KEYWORD2
 
 # Constants (LITERAL1)
 OT_0	LITERAL1

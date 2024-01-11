@@ -182,6 +182,5 @@ private:
 
 public:
     // Testing
-    void readFifoRegisters();
-    void testRegister(byte regAddress, uint8_t value, byte mask);
+    bool selfTest();
 };

@@ -18,6 +18,7 @@ This accelerometer is packed with features, so check out the [simple example her
 * ```begin()``` Call this to initiate the accelerometer.
 * ```begin(uint32_t spiClockSpeed)``` Initiate with a custom spi clock speed. 
 * ```printDevice()``` Print the device's Analog Devices ID, device ID, MEMS ID, revision ID and Device Status.
+* ```selfTest()``` Executes the self test procedure. Returns true if the test finished and passed, otherwise returns false.
 #### Reading Acceleration
 * ```setStatusCheck(bool isCheckingStatus)``` Sets if you want to check if the data is ready or not, before reading the acceleration data.
 * ```readAcceleration(float& x, float& y, float& z)``` Read the 3-axis acceleration in g.
