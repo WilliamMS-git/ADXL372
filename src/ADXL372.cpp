@@ -424,12 +424,12 @@ void ADXL372class::selectInt2Functions(uint8_t function)
 
 void ADXL372class::setOdr(Odr odr)
 {
-    m_odr = (int)odr;
-    if (m_odr < m_bandwidth)
+    int currentBandwidth = readRegister(MEASURE) & 0b00000111; // Get only the bandwidth bits
+    if ((int)odr < currentBandwidth)
     {
         Serial.println("WARNING: ODR must be at least double the bandwidth, to not violate the Nyquist criteria. Otherwise signal integrity will not be maintained");
     }
-    byte odrShifted = m_odr << 5; // odr bits start from bit 5
+    byte odrShifted = odr << 5; // odr bits start from bit 5
     updateRegister(TIMING, odrShifted, ODR_MASK);
 }
 
@@ -452,8 +452,8 @@ void ADXL372class::enableExternalTrigger(bool isEnabled)
 
 void ADXL372class::setBandwidth(Bandwidth bandwidth)
 {
-    m_bandwidth = (int)bandwidth;
-    if (m_bandwidth > m_odr)
+    int currentOdr = (readRegister(TIMING) & 0b11100000) >> 5; // Get only the ODR bits
+    if ((int)bandwidth > currentOdr)
     {
         Serial.println("WARNING: Bandwidth must be no greater than half the ODR, to not violate the Nyquist criteria. Otherwise signal integrity will not be maintained");
     }

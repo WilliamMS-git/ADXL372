@@ -168,8 +168,6 @@ public:
 
 private:
     int m_csPin;
-    int m_odr = 0;
-    int m_bandwidth = 0;
     bool m_isCheckingStatus = true;
     int m_sampleSize;
 
