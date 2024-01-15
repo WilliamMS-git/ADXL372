@@ -2,7 +2,7 @@
 ## Arduino library for the ADXL372 accelerometer
 Available in Arduino Library manager!
 
-Documentation: [ADXL372 Datasheet](https://www.analog.com/media/en/technical-documentation/data-sheets/adxl372.pdf)
+Please read the documentation: [ADXL372 Datasheet](https://www.analog.com/media/en/technical-documentation/data-sheets/adxl372.pdf)
 
 ### How to install from Arduino IDE:
 1. Open the Library Manager (Ctrl + Shift + I).
@@ -42,7 +42,7 @@ This accelerometer is packed with features, so check out the [simple example her
 * ```setReferencedMotionWarningProcessing(bool isReferenced)``` Referenced Motion Warning processing for each axis when true. Absolute processing when false.
 
 #### FIFO
-
+The FIFO has not been implemented yet.
 #### Interrupt pins
 * ```selectInt1Function(InterruptFunction function)``` Select an interrupt function for interrupt pin 1
 * ```selectInt1Functions(uint8_t function)``` Select multiple interrupt functions for interrupt pin 1. For example: ```(DATA_RDY | AWAKE)```.

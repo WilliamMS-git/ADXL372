@@ -119,6 +119,7 @@ public:
     void begin(uint32_t spiClockSpeed);
     void end();
     void printDevice();
+    bool selfTest();
 
     void readAcceleration(float &x, float &y, float &z);
     void readPeakAcceleration(float &x, float &y, float &z);
@@ -176,7 +177,4 @@ private:
     void writeRegister(byte regAddress, uint8_t value);
     void updateRegister(byte regAddress, uint8_t value, byte mask);
 
-public:
-    // Testing
-    bool selfTest();
 };

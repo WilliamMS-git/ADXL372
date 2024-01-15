@@ -197,7 +197,7 @@ void ADXL372class::readAcceleration(float &x, float &y, float &z)
 
 void ADXL372class::readPeakAcceleration(float &xPeak, float &yPeak, float &zPeak)
 {
-   byte status;
+    byte status;
     do
     {
         status = readRegister(0x04);
@@ -229,7 +229,7 @@ uint8_t ADXL372class::formatThresholdValue(uint16_t thresholdValue)
 {
     if (thresholdValue > 0x7FF) // The threshold value is an 11-bit value. So the max limit is 0x7FF.
     {
-        Serial.println("WARNING: Threshold value limit is 2047");
+        Serial.println("WARNING: Threshold value limit is 2047, going beyond this value will have unintended effects.");
     }
     return thresholdValue = thresholdValue >> 3; // Get 8 MSB
 }

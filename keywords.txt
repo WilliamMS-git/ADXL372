@@ -1,9 +1,17 @@
+#######################################
 # Syntax Coloring Map For ADXL372
+#######################################
 
+#######################################
 # Datatypes and Class Names (KEYWORD1)
+#######################################
+
 ADXL372class	KEYWORD1
 
+#######################################
 # Methods and Functions (KEYWORD2)
+#######################################
+
 begin	KEYWORD2
 end KEYWORD2
 setStatusCheck	KEYWORD2
@@ -40,7 +48,10 @@ setFilterSettling	KEYWORD2
 setInstantOnThreshold	KEYWORD2
 selfTest	KEYWORD2
 
+#######################################
 # Constants (LITERAL1)
+#######################################
+
 OT_0	LITERAL1
 OT_7_5	LITERAL1
 OT_15	LITERAL1
