@@ -12,7 +12,7 @@ Please read the documentation: [ADXL372 Datasheet](https://www.analog.com/media/
 ### How to use:
 This library uses SPI as communication with the accelerometer. I²C is supported, but has limited functionality. See the documentation for further information.
 
-This accelerometer is packed with features, so check out the [simple example here](https://github.com/Fourier-git/ADXL372/blob/main/examples/ReadAccelerationExample/ReadAccelerationExample.ino) for the minimum requirements for continuously reading the 3-axis acceleration.
+This accelerometer is packed with features, so check out the [simple example here](https://github.com/WilliamMS-git/ADXL372/blob/main/examples/ReadAccelerationExample/ReadAccelerationExample.ino) for the minimum requirements for continuously reading the 3-axis acceleration.
 
 * ```ADXL372class(csPin)``` Create an ADXL372 object with the CS (Chip select) pin.
 * ```begin()``` Call this to initiate the accelerometer.
