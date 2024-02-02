@@ -1,25 +1,6 @@
 #include "Arduino.h"
 #include "SPI.h"
 
-enum OffsetTrims {
-    OT_0 = 0b0000,
-    OT_7_5 = 0b0001,
-    OT_15 = 0b0010,
-    OT_22_5 = 0b0011,
-    OT_30 = 0b0100,
-    OT_37_5 = 0b0101,
-    OT_45 = 0b0110,
-    OT_52_5 = 0b0111,
-    OT_n60 = 0b1000,
-    OT_n52_5 = 0b1001,
-    OT_n45 = 0b1010,
-    OT_n37_5 = 0b1011,
-    OT_n30 = 0b1100,
-    OT_n22_5 = 0b1101,
-    OT_n15 = 0b1110,
-    OT_n7_5 = 0b1111,
-};
-
 enum FifoMode
 {
     FIFO_DISABLED = 0b00,
@@ -124,7 +105,7 @@ public:
     void readAcceleration(float &x, float &y, float &z);
     void readPeakAcceleration(float &x, float &y, float &z);
 
-    void setOffsetTrims(OffsetTrims xOffset, OffsetTrims yOffset, OffsetTrims zOffset);
+    void setOffsetTrims(float xOffset, float yOffset, float zOffset);
 
     void setActivityThresholds(uint16_t xThreshold, uint16_t yThreshold, uint16_t zThreshold);
     void enableActivityDetection(bool isEnabledX, bool isEnabledY, bool isEnabledZ);
@@ -172,6 +153,7 @@ private:
 
     uint8_t formatThresholdValue(uint16_t thresholdValue);
     void checkStandbyMode();
+    int convertOffsetValue(float offset);
 
     uint8_t readRegister(byte regAddress);
     void writeRegister(byte regAddress, uint8_t value);

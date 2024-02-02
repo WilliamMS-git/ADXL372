@@ -217,12 +217,15 @@ void ADXL372class::readPeakAcceleration(float &xPeak, float &yPeak, float &zPeak
     zPeak = rawZ * SCALE_FACTOR * MG_TO_G;
 }
 
-void ADXL372class::setOffsetTrims(OffsetTrims xOffset, OffsetTrims yOffset, OffsetTrims zOffset)
+void ADXL372class::setOffsetTrims(float xOffset, float yOffset, float zOffset)
 {
+    int xOffsetConverted = convertOffsetValue(xOffset);
+    int yOffsetConverted = convertOffsetValue(yOffset);
+    int zOffsetConverted = convertOffsetValue(zOffset);
     // No need to mask or bitshift for the offset registers
-    writeRegister(OFFSET_X, xOffset);
-    writeRegister(OFFSET_Y, yOffset);
-    writeRegister(OFFSET_Z, zOffset);
+    writeRegister(OFFSET_X, xOffsetConverted);
+    writeRegister(OFFSET_Y, yOffsetConverted);
+    writeRegister(OFFSET_Z, zOffsetConverted);
 }
 
 uint8_t ADXL372class::formatThresholdValue(uint16_t thresholdValue)
@@ -511,6 +514,23 @@ void ADXL372class::checkStandbyMode()
     {
         Serial.println("WARNING: Activity, Inactivity and FIFO can only be set while in standy mode");
     }
+}
+
+int ADXL372class::convertOffsetValue(float offset) {
+    if(offset < -60.0f || offset > 52.5f){
+        Serial.println("WARNING: Offset value can only be set to between -60 and 52.5. Try again");
+        return 0;
+    }
+
+    int mappedOffset;
+
+    if(offset >= 0){
+        mappedOffset = static_cast<int>((offset / 52.5f) * 7);
+    }
+    else {
+        mappedOffset = static_cast<int>(((offset +60 ) / 52.5f) * 7) + 8;
+    }
+    return mappedOffset;
 }
 
 uint8_t ADXL372class::readRegister(byte regAddress)

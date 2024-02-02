@@ -24,7 +24,7 @@ This accelerometer is packed with features, so check out the [simple example her
 * ```readAcceleration(float& x, float& y, float& z)``` Read the 3-axis acceleration in g.
 * ```readPeakAcceleration(float& xPeak, float& yPeak, float& zPeak)``` Read the 3-axis peak acceleration in g.
 #### Offset
-* ```setOffsetTrims(OffsetTrims xOffset, OffsetTrims yOffset, OffsetTrims zOffset)``` Sets the offsets for each of the 3-axis. Use enum OffsetTrims between ```OT_n60``` and ```OT_52_5``` in intervals of 7.5 (```7_5```).
+* ```setOffsetTrims(OffsetTrims xOffset, OffsetTrims yOffset, OffsetTrims zOffset)``` Sets the offsets for each of the 3-axis. Can be set between -60 and 52.5 with 7.5 intervals.
 #### Activity
 * ```setActivityThresholds(uint16_t xThreshold, uint16_t yThreshold, uint16_t zThreshold)``` Sets the activity thresholds for the 3 axis. Threshold value is a 11-bit value with 100mg per LSB
 * ```enableActivityDetection(bool isEnabledX, bool isEnabledY, bool isEnabledZ)``` Enable activity detection for each axis. 
