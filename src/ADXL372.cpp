@@ -569,12 +569,15 @@ bool ADXL372class::selfTest()
     updateRegister(SELF_TEST, true, ST_MASK);
     delay(300);
 
-    if ((readRegister(SELF_TEST) & ST_DONE_MASK) == false)
+    if ((readRegister(SELF_TEST) & ~ST_DONE_MASK) == false)
     {
         Serial.println("Self Test was not finished");
         return false;
     }
 
-    bool isTestPassed = readRegister(SELF_TEST) & USER_ST_MASK;
+    bool isTestPassed = readRegister(SELF_TEST) & ~USER_ST_MASK;
+
+    updateRegister(SELF_TEST, false, ST_MASK); //Clear self test
+    
     return isTestPassed;
 }
